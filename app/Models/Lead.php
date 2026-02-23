@@ -27,8 +27,6 @@ class Lead extends Model
 
         // Canaux
         'linkedin_status',
-        'suivi_mail',
-        'suivi_whatsapp',
         'appel_tel',
         'mp_instagram',
         'follow_insta',

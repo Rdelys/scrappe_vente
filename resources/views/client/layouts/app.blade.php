@@ -843,7 +843,9 @@
                     <i class="fa-solid fa-chart-line"></i> CRM
                 </a>
                 <ul class="submenu" id="crm-submenu">
+                    @if(session('client.role') === 'superadmin')
                     <li><a href="{{ route('client.crm.dashboard') }}">Dashboard</a></li>
+                    @endif
                     <li><a href="{{ route('client.crm.leads') }}">Mes Leads</a></li>
                 </ul>
             </li>

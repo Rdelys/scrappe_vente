@@ -13,14 +13,12 @@
         
         @if(isset($places) && $places->count())
             <div class="btn-group">
-                <a href="{{ route('client.google.export.pdf', request()->only('filter_scrapping')) }}"
- class="btn btn-pdf">
+                <a href="{{ route('client.google.export.pdf', request()->only('filter_scrapping')) }}" class="btn btn-pdf">
                     <i class="fa-solid fa-file-pdf"></i>
                     <span>PDF</span>
                 </a>
 
-                <a href="{{ route('client.google.export.excel', request()->only('filter_scrapping')) }}"
- class="btn btn-excel">
+                <a href="{{ route('client.google.export.excel', request()->only('filter_scrapping')) }}" class="btn btn-excel">
                     <i class="fa-solid fa-file-excel"></i>
                     <span>Excel</span>
                 </a>
@@ -66,55 +64,57 @@
 
     {{-- Search Form --}}
     <form method="POST" action="{{ route('client.google.scrape') }}" class="search-form" id="searchForm">
-    @csrf
+        @csrf
+        <div class="search-box">
+            <input type="text"
+                   name="query"
+                   required
+                   placeholder="Ex : plombier Paris"
+                   value="{{ old('query') }}"
+                   class="search-input">
 
-    <div class="search-box">
-        <input type="text"
-               name="query"
-               required
-               placeholder="Ex : plombier Paris"
-               value="{{ old('query') }}"
-               class="search-input">
+            <input type="text"
+                   name="nom_scrapping"
+                   required
+                   placeholder="Nom du scrapping (ex: Plombiers Paris Janvier)"
+                   value="{{ old('nom_scrapping') }}"
+                   class="search-input">
 
-        <input type="text"
-               name="nom_scrapping"
-               required
-               placeholder="Nom du scrapping (ex: Plombiers Paris Janvier)"
-               value="{{ old('nom_scrapping') }}"
-               class="search-input">
-
-        <button type="submit" class="search-button">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-    </div>
-</form>
-
+            <button type="submit" class="search-button">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </form>
 
     {{-- Loader --}}
     <div id="loader" class="loader hidden">
         <div class="spinner"></div>
         <p>Scraping en cours... Analyse Google + Sites web</p>
     </div>
-<form method="GET" action="{{ route('client.google') }}" style="margin-bottom:20px;">
-    <select name="filter_scrapping" onchange="this.form.submit()" class="search-input">
-        <option value="">-- Tous les scrappings --</option>
-        @foreach($scrappings as $scrap)
-            <option value="{{ $scrap }}" 
-                {{ request('filter_scrapping') == $scrap ? 'selected' : '' }}>
-                {{ $scrap }}
-            </option>
-        @endforeach
-    </select>
-</form>
-@if(request('filter_scrapping'))
-<form method="POST" action="{{ route('client.google.export.lead.scrapping') }}">
-    @csrf
-    <input type="hidden" name="nom_scrapping" value="{{ request('filter_scrapping') }}">
-    <button class="btn btn-success">
-        Exporter tout le scrapping
-    </button>
-</form>
-@endif
+
+    {{-- Filter Section --}}
+    <form method="GET" action="{{ route('client.google') }}" class="filter-form">
+        <select name="filter_scrapping" onchange="this.form.submit()" class="filter-select">
+            <option value="">-- Tous les scrappings --</option>
+            @foreach($scrappings as $scrap)
+                <option value="{{ $scrap }}" 
+                    {{ request('filter_scrapping') == $scrap ? 'selected' : '' }}>
+                    {{ $scrap }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+
+    @if(request('filter_scrapping'))
+        <form method="POST" action="{{ route('client.google.export.lead.scrapping') }}" class="export-form">
+            @csrf
+            <input type="hidden" name="nom_scrapping" value="{{ request('filter_scrapping') }}">
+            <button class="btn btn-export-all">
+                <i class="fa-solid fa-download"></i>
+                Exporter tout le scrapping
+            </button>
+        </form>
+    @endif
 
     {{-- Results Section --}}
     @if(isset($places) && $places->count())
@@ -136,6 +136,25 @@
                 </button>
             </div>
 
+            {{-- Column Width Controls --}}
+            <div class="column-controls">
+                <div class="column-presets">
+                    <span class="presets-label">
+                        <i class="fa-solid fa-arrows-left-right"></i>
+                        Largeur des colonnes:
+                    </span>
+                    <button type="button" class="preset-btn" data-preset="compact">Compact</button>
+                    <button type="button" class="preset-btn" data-preset="normal">Normal</button>
+                    <button type="button" class="preset-btn" data-preset="wide">Large</button>
+                    <button type="button" class="preset-btn" data-preset="auto">Auto</button>
+                </div>
+                <div class="column-custom">
+                    <button type="button" class="save-widths-btn" id="saveWidthsBtn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Sauvegarder
+                    </button>
+                </div>
+            </div>
 
             {{-- Table Container with Resizable Columns --}}
             <div class="table-container-wrapper">
@@ -146,21 +165,19 @@
                                 <th class="checkbox-col" style="width: 50px; min-width: 50px; max-width: 50px;">
                                     <input type="checkbox" id="select-all" class="checkbox">
                                 </th>
-                                <th class="resizable" data-index="11">Nom Scrapping</th>
-
-                                <th class="resizable" data-index="1">Entreprise</th>
-                                <th class="resizable" data-index="2">Catégorie</th>
-                                <th class="resizable" data-index="3">Adresse</th>
-                                <th class="resizable" data-index="4">Téléphone</th>
-                                <th class="resizable" data-index="5">Site web</th>
-                                <th class="resizable" data-index="6">Email</th>
-                                <th class="resizable" data-index="7">Réseaux</th>
-                                <th class="resizable" data-index="8" style="width: 80px; min-width: 80px;">Note</th>
-                                <th class="resizable" data-index="9" style="width: 80px; min-width: 80px;">Avis</th>
-                                <th class="resizable" data-index="10" style="width: 120px; min-width: 120px;">Statut</th>
-                                <th class="resizable">Exporté</th>
-<th style="width:120px;">Action</th>
-
+                                <th class="resizable" data-index="11" data-default="150">Nom Scrapping</th>
+                                <th class="resizable" data-index="1" data-default="200">Entreprise</th>
+                                <th class="resizable" data-index="2" data-default="150">Catégorie</th>
+                                <th class="resizable" data-index="3" data-default="200">Adresse</th>
+                                <th class="resizable" data-index="4" data-default="150">Téléphone</th>
+                                <th class="resizable" data-index="5" data-default="200">Site web</th>
+                                <th class="resizable" data-index="6" data-default="200">Email</th>
+                                <th class="resizable" data-index="7" data-default="120">Réseaux</th>
+                                <th class="resizable" data-index="8" data-default="80" style="min-width: 80px;">Note</th>
+                                <th class="resizable" data-index="9" data-default="80" style="min-width: 80px;">Avis</th>
+                                <th class="resizable" data-index="10" data-default="120" style="min-width: 120px;">Statut</th>
+                                <th class="resizable" data-index="12" data-default="100">Exporté</th>
+                                <th style="width:120px; min-width:120px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -170,7 +187,6 @@
                                         <input type="checkbox" name="selected[]" value="{{ $p->id }}" class="checkbox row-checkbox">
                                     </td>
                                     <td>{{ $p->nom_scrapping ?? '—' }}</td>
-
                                     <td class="company-name">{{ $p->name ?? '—' }}</td>
                                     <td>{{ $p->category ?? '—' }}</td>
                                     <td>{{ $p->address ?? '—' }}</td>
@@ -268,45 +284,32 @@
                                         @endif
                                     </td>
                                     <td>
-    @if($p->exported_to_lead)
-        <span class="status-badge status-success">
-            <i class="fa-solid fa-check"></i> Oui
-        </span>
-    @else
-        <span class="status-badge status-warning">
-            <i class="fa-solid fa-clock"></i> Non
-        </span>
-    @endif
-</td>
-
-<td>
-    @if(!$p->exported_to_lead)
-        <button 
-            type="button"
-            class="btn btn-primary btn-sm export-btn"
-            data-url="{{ route('client.google.export.lead.single', $p->id) }}">
-            Exporter
-        </button>
-    @else
-        —
-    @endif
-</td>
-
-
+                                        @if($p->exported_to_lead)
+                                            <span class="status-badge status-success">
+                                                <i class="fa-solid fa-check"></i> Oui
+                                            </span>
+                                        @else
+                                            <span class="status-badge status-warning">
+                                                <i class="fa-solid fa-clock"></i> Non
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(!$p->exported_to_lead)
+                                            <button 
+                                                type="button"
+                                                class="btn btn-primary btn-sm export-btn"
+                                                data-url="{{ route('client.google.export.lead.single', $p->id) }}">
+                                                Exporter
+                                            </button>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            {{-- Column Width Controls --}}
-            <div class="column-controls">
-                <div class="column-width-presets">
-                    <span class="preset-label">Largeur des colonnes:</span>
-                    <button type="button" class="preset-btn" data-width="compact">Compact</button>
-                    <button type="button" class="preset-btn" data-width="normal">Normal</button>
-                    <button type="button" class="preset-btn" data-width="wide">Large</button>
                 </div>
             </div>
 
@@ -318,13 +321,12 @@
                             <i class="fa-solid fa-chevron-left"></i>
                         </span>
                     @else
-                        <a href="{{ $places->appends(request()->query())->previousPageUrl() }}"
- class="pagination-item">
+                        <a href="{{ $places->appends(request()->query())->previousPageUrl() }}" class="pagination-item">
                             <i class="fa-solid fa-chevron-left"></i>
                         </a>
                     @endif
 
-@foreach ($places->appends(request()->query())->getUrlRange(
+                    @foreach ($places->appends(request()->query())->getUrlRange(
                         max(1, $places->currentPage() - 2),
                         min($places->lastPage(), $places->currentPage() + 2)
                     ) as $page => $url)
@@ -336,8 +338,7 @@
                     @endforeach
 
                     @if ($places->hasMorePages())
-                        <a href="{{ $places->appends(request()->query())->nextPageUrl() }}"
- class="pagination-item">
+                        <a href="{{ $places->appends(request()->query())->nextPageUrl() }}" class="pagination-item">
                             <i class="fa-solid fa-chevron-right"></i>
                         </a>
                     @else
@@ -361,7 +362,7 @@
 
 <style>
 /*=============================================================================
-  GOOGLE MAPS - ULTRA PREMIUM STYLE AVEC COLONNES REDIMENSIONNABLES
+  GOOGLE MAPS - STYLE AMÉLIORÉ AVEC COLONNES REDIMENSIONNABLES
   =============================================================================*/
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -632,6 +633,28 @@
     box-shadow: var(--shadow-lg);
 }
 
+.btn-export-all {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+    color: white;
+    border: none;
+    padding: var(--spacing-3) var(--spacing-6);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+    border: 1px solid var(--primary-500);
+}
+
+.btn-export-all:hover {
+    background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
 .btn-delete {
     background: white;
     border-color: var(--gray-200);
@@ -653,6 +676,28 @@
     color: var(--gray-400);
     box-shadow: none;
     transform: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+    color: white;
+    border: none;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary.btn-sm {
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: 0.875rem;
 }
 
 /* Alerts */
@@ -769,6 +814,40 @@
     box-shadow: var(--shadow-lg);
 }
 
+/* Filter Form */
+.filter-form {
+    margin-bottom: var(--spacing-4);
+}
+
+.filter-select {
+    width: 100%;
+    max-width: 300px;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: 0.9375rem;
+    color: var(--gray-700);
+    background: white;
+    cursor: pointer;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-select:hover {
+    border-color: var(--primary-400);
+    box-shadow: var(--shadow-md);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.export-form {
+    margin-bottom: var(--spacing-4);
+}
+
 /* Loader */
 .loader {
     text-align: center;
@@ -844,6 +923,99 @@
     margin-right: var(--spacing-1);
 }
 
+/* Column Controls */
+.column-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 768px) {
+    .column-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.column-presets {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.presets-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: 0.9375rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.presets-label i {
+    color: var(--primary-600);
+}
+
+.preset-btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.preset-btn:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.preset-btn.active {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+    border-color: var(--primary-600);
+    color: white;
+}
+
+.column-custom {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.save-widths-btn {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--success-600), var(--success-700));
+    color: white;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    border: none;
+}
+
+.save-widths-btn:hover {
+    background: linear-gradient(135deg, var(--success-700), var(--success-800));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
 /* Table Container */
 .table-container-wrapper {
     width: 100%;
@@ -889,6 +1061,7 @@
     user-select: none;
     background: inherit;
     border-right: 1px solid var(--gray-200);
+    transition: background-color 0.2s;
 }
 
 .data-table th:last-child {
@@ -937,53 +1110,6 @@
 
 .data-table tbody tr:last-child td {
     border-bottom: none;
-}
-
-/* Column Width Presets */
-.column-controls {
-    margin-bottom: var(--spacing-4);
-    display: flex;
-    justify-content: flex-end;
-}
-
-.column-width-presets {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    background: white;
-    padding: var(--spacing-2);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-sm);
-}
-
-.preset-label {
-    font-size: 0.875rem;
-    color: var(--gray-600);
-    margin-right: var(--spacing-2);
-}
-
-.preset-btn {
-    padding: var(--spacing-1) var(--spacing-3);
-    font-size: 0.875rem;
-    font-weight: 500;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-md);
-    background: white;
-    color: var(--gray-700);
-    cursor: pointer;
-    transition: var(--transition-base);
-}
-
-.preset-btn:hover {
-    background: var(--gray-100);
-    border-color: var(--gray-300);
-}
-
-.preset-btn.active {
-    background: var(--primary-600);
-    border-color: var(--primary-600);
-    color: white;
 }
 
 /* Checkbox column */
@@ -1400,41 +1526,6 @@
     transition: width 0.3s ease;
 }
 
-/* Button Primary/Secondary */
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-    color: white;
-    border: none;
-    padding: var(--spacing-2) var(--spacing-4);
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition-base);
-}
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-    color: var(--gray-700);
-    padding: var(--spacing-2) var(--spacing-4);
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition-base);
-}
-
-.btn-secondary:hover {
-    background: var(--gray-200);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
 /* Notification */
 .notification {
     position: fixed;
@@ -1551,12 +1642,22 @@
         height: 1.5rem;
     }
     
-    .column-controls {
+    .column-presets {
+        width: 100%;
         justify-content: center;
     }
     
-    .column-width-presets {
-        flex-wrap: wrap;
+    .presets-label {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .column-custom {
+        width: 100%;
+    }
+    
+    .save-widths-btn {
+        width: 100%;
         justify-content: center;
     }
     
@@ -1581,6 +1682,8 @@
         initializeScrapingButtons();
         initializeResizableColumns();
         initializeColumnPresets();
+        initializeWidthSaving();
+        loadSavedWidths();
     });
 
     // Table selection management
@@ -1644,11 +1747,13 @@
                 ripple.classList.add('ripple');
                 this.appendChild(ripple);
                 
-                const x = e.clientX - e.target.offsetLeft;
-                const y = e.clientY - e.target.offsetTop;
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 
                 ripple.style.left = `${x}px`;
                 ripple.style.top = `${y}px`;
+                ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
                 
                 setTimeout(() => {
                     ripple.remove();
@@ -1667,6 +1772,7 @@
         let currentCol = null;
         let startX = 0;
         let startWidth = 0;
+        let minWidth = 50;
 
         cols.forEach(col => {
             col.addEventListener('mousedown', function(e) {
@@ -1680,12 +1786,19 @@
                     startX = e.clientX;
                     startWidth = this.offsetWidth;
                     
+                    // Get min width from data attribute or default
+                    const minWidthAttr = this.dataset.minWidth;
+                    if (minWidthAttr) {
+                        minWidth = parseInt(minWidthAttr);
+                    }
+                    
                     this.classList.add('resizing');
                     
                     document.addEventListener('mousemove', onMouseMove);
                     document.addEventListener('mouseup', onMouseUp);
                     
                     e.preventDefault();
+                    e.stopPropagation();
                 }
             });
         });
@@ -1694,12 +1807,10 @@
             if (!isResizing || !currentCol) return;
             
             const diff = e.clientX - startX;
-            const newWidth = Math.max(50, startWidth + diff); // Minimum 50px
+            const newWidth = Math.max(minWidth, startWidth + diff);
             
             currentCol.style.width = newWidth + 'px';
-            
-            // Save to localStorage
-            saveColumnWidths();
+            currentCol.style.minWidth = newWidth + 'px';
         }
 
         function onMouseUp() {
@@ -1707,18 +1818,158 @@
                 isResizing = false;
                 if (currentCol) {
                     currentCol.classList.remove('resizing');
+                    currentCol = null;
                 }
                 
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
+                
+                // Auto-save widths
+                saveWidthsToStorage();
             }
         }
-
-        // Load saved widths
-        loadColumnWidths();
     }
 
-    function saveColumnWidths() {
+    // Column Presets
+    function initializeColumnPresets() {
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const resetBtn = document.getElementById('resetColumnsBtn');
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.dataset.preset;
+                applyColumnPreset(preset);
+                
+                presetBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                resetColumnWidths();
+                presetBtns.forEach(b => b.classList.remove('active'));
+            });
+        }
+
+        // Load active preset from storage
+        const savedPreset = localStorage.getItem('googleMapsActivePreset');
+        if (savedPreset) {
+            const activeBtn = document.querySelector(`.preset-btn[data-preset="${savedPreset}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+    }
+
+    function applyColumnPreset(preset) {
+        const table = document.getElementById('resizableTable');
+        if (!table) return;
+
+        const cols = table.querySelectorAll('th.resizable');
+        
+        const presets = {
+            compact: {
+                '1': 150,   // Entreprise
+                '2': 120,   // Catégorie
+                '3': 150,   // Adresse
+                '4': 120,   // Téléphone
+                '5': 150,   // Site web
+                '6': 150,   // Email
+                '7': 100,   // Réseaux
+                '8': 70,    // Note
+                '9': 70,    // Avis
+                '10': 100,  // Statut
+                '11': 120,  // Nom Scrapping
+                '12': 80    // Exporté
+            },
+            normal: {
+                '1': 200,
+                '2': 150,
+                '3': 200,
+                '4': 150,
+                '5': 200,
+                '6': 200,
+                '7': 120,
+                '8': 80,
+                '9': 80,
+                '10': 120,
+                '11': 150,
+                '12': 100
+            },
+            wide: {
+                '1': 250,
+                '2': 200,
+                '3': 250,
+                '4': 200,
+                '5': 250,
+                '6': 250,
+                '7': 150,
+                '8': 100,
+                '9': 100,
+                '10': 150,
+                '11': 200,
+                '12': 120
+            },
+            auto: {} // Auto will use content-based widths
+        };
+
+        if (preset === 'auto') {
+            cols.forEach(col => {
+                col.style.width = '';
+                col.style.minWidth = col.dataset.default ? col.dataset.default + 'px' : '';
+            });
+        } else {
+            cols.forEach(col => {
+                const index = col.dataset.index;
+                if (presets[preset][index]) {
+                    col.style.width = presets[preset][index] + 'px';
+                    col.style.minWidth = presets[preset][index] + 'px';
+                }
+            });
+        }
+
+        // Save preset to storage
+        localStorage.setItem('googleMapsActivePreset', preset);
+        saveWidthsToStorage();
+        
+        showNotification(`Colonnes en mode ${preset}`, 'success');
+    }
+
+    function resetColumnWidths() {
+        const table = document.getElementById('resizableTable');
+        if (!table) return;
+
+        const cols = table.querySelectorAll('th.resizable');
+        cols.forEach(col => {
+            const defaultWidth = col.dataset.default;
+            if (defaultWidth) {
+                col.style.width = defaultWidth + 'px';
+                col.style.minWidth = defaultWidth + 'px';
+            } else {
+                col.style.width = '';
+                col.style.minWidth = '';
+            }
+        });
+
+        localStorage.removeItem('googleMapsColumnWidths');
+        localStorage.removeItem('googleMapsActivePreset');
+        
+        showNotification('Colonnes réinitialisées', 'success');
+    }
+
+    // Save/Load widths
+    function initializeWidthSaving() {
+        const saveBtn = document.getElementById('saveWidthsBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function() {
+                saveWidthsToStorage();
+                showNotification('Largeurs sauvegardées', 'success');
+            });
+        }
+    }
+
+    function saveWidthsToStorage() {
         const table = document.getElementById('resizableTable');
         if (!table) return;
 
@@ -1733,7 +1984,7 @@
         localStorage.setItem('googleMapsColumnWidths', JSON.stringify(widths));
     }
 
-    function loadColumnWidths() {
+    function loadSavedWidths() {
         const table = document.getElementById('resizableTable');
         if (!table) return;
 
@@ -1746,8 +1997,9 @@
             
             cols.forEach(col => {
                 const index = col.dataset.index;
-                if (widths[index]) {
+                if (widths[index] && widths[index] !== '') {
                     col.style.width = widths[index];
+                    col.style.minWidth = widths[index];
                 }
             });
         } catch (e) {
@@ -1755,106 +2007,22 @@
         }
     }
 
-    // Column Presets
-    function initializeColumnPresets() {
-        const presetBtns = document.querySelectorAll('.preset-btn');
-        const resetBtn = document.getElementById('resetColumnsBtn');
-
-        presetBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const width = this.dataset.width;
-                setColumnPreset(width);
-                
-                presetBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                resetColumnWidths();
-            });
-        }
-    }
-
-    function setColumnPreset(preset) {
-        const table = document.getElementById('resizableTable');
-        if (!table) return;
-
-        const cols = table.querySelectorAll('th.resizable');
-        const widths = {
-            compact: {
-                '1': '150px',   // Entreprise
-                '2': '120px',   // Catégorie
-                '3': '150px',   // Adresse
-                '4': '120px',   // Téléphone
-                '5': '150px',   // Site web
-                '6': '150px',   // Email
-                '7': '100px',   // Réseaux
-                '8': '80px',    // Note
-                '9': '80px',    // Avis
-                '10': '120px'   // Statut
-            },
-            normal: {
-                '1': '200px',
-                '2': '150px',
-                '3': '200px',
-                '4': '150px',
-                '5': '200px',
-                '6': '200px',
-                '7': '120px',
-                '8': '80px',
-                '9': '80px',
-                '10': '120px'
-            },
-            wide: {
-                '1': '250px',
-                '2': '200px',
-                '3': '250px',
-                '4': '200px',
-                '5': '250px',
-                '6': '250px',
-                '7': '150px',
-                '8': '100px',
-                '9': '100px',
-                '10': '150px'
-            }
-        };
-
-        cols.forEach(col => {
-            const index = col.dataset.index;
-            if (widths[preset][index]) {
-                col.style.width = widths[preset][index];
-            }
-        });
-
-        saveColumnWidths();
-    }
-
-    function resetColumnWidths() {
-        const table = document.getElementById('resizableTable');
-        if (!table) return;
-
-        const cols = table.querySelectorAll('th.resizable');
-        cols.forEach(col => {
-            col.style.width = '';
-        });
-
-        localStorage.removeItem('googleMapsColumnWidths');
-        
-        document.querySelectorAll('.preset-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        showNotification('Colonnes réinitialisées', 'success');
-    }
-
     // Notification system
     function showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existing = document.querySelector('.notification');
+        if (existing) {
+            existing.remove();
+        }
+
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
+        
+        const icon = type === 'success' ? 'circle-check' : 
+                     type === 'error' ? 'circle-exclamation' : 'info-circle';
+        
         notification.innerHTML = `
-            <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <i class="fa-solid fa-${icon}"></i>
             <span>${message}</span>
         `;
         
@@ -1896,6 +2064,12 @@
         document.getElementById('confirmBtn').addEventListener('click', () => {
             modal.remove();
             onConfirm();
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
         });
     }
 
@@ -2049,35 +2223,43 @@
             });
         }
     }
+
+    // Export single button handler
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('export-btn') || e.target.closest('.export-btn')) {
+            const btn = e.target.classList.contains('export-btn') ? e.target : e.target.closest('.export-btn');
+            const url = btn.dataset.url;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Erreur export');
+                return res.json();
+            })
+            .then(data => {
+                showNotification('Export réussi', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showNotification("Erreur lors de l'export", 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Exporter';
+            });
+        }
+    });
 })();
-
-document.addEventListener('click', function(e) {
-
-    if (e.target.classList.contains('export-btn')) {
-
-        const url = e.target.dataset.url;
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error('Erreur');
-            return res.text();
-        })
-        .then(() => {
-            window.location.reload();
-        })
-        .catch(() => {
-            alert('Erreur export');
-        });
-    }
-
-});
-
 </script>
 @endsection

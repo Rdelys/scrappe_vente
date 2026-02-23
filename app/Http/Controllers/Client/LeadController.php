@@ -10,6 +10,24 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LeadController extends Controller
 {
+    private function getAccessibleClientIds()
+{
+    $sessionClient = session('client');
+
+    if (!$sessionClient) {
+        return [];
+    }
+
+    // Superadmin → tous les clients de la même company
+    if ($sessionClient['role'] === 'superadmin') {
+        return \App\Models\Client::where('company', $sessionClient['company'])
+            ->pluck('id')
+            ->toArray();
+    }
+
+    // Sinon → uniquement lui
+    return [$sessionClient['id']];
+}
     /*
     |--------------------------------------------------------------------------
     | LISTE DES LEADS
@@ -17,10 +35,13 @@ class LeadController extends Controller
     */
     public function index(Request $request)
 {
-    $clientId = session('client.id');
+    $clientIds = $this->getAccessibleClientIds();
 
-    $baseQuery = Lead::where('client_id', $clientId);
+if (empty($clientIds)) {
+    return redirect()->back()->with('error', 'Session expirée');
+}
 
+$baseQuery = Lead::whereIn('client_id', $clientIds);
     /*
     |--------------------------------------------------------------------------
     | FILTRES
@@ -217,10 +238,13 @@ class LeadController extends Controller
 
     public function exportExcel(Request $request)
 {
-    $clientId = session('client.id');
+    $clientIds = $this->getAccessibleClientIds();
 
-    $query = Lead::where('client_id', $clientId);
+if (empty($clientIds)) {
+    abort(403);
+}
 
+$query = Lead::whereIn('client_id', $clientIds);
     // 🔥 Reproduire filtres
     if ($request->filled('search')) {
         $search = $request->search;

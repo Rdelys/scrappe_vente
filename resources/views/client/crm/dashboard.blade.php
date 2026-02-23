@@ -1,1255 +1,996 @@
 @extends('client.layouts.app')
 
-@section('title', 'CRM Dashboard')
+@section('title', 'Dashboard CRM')
 
 @section('content')
-<div class="dashboard-container">
-    <!-- Header avec sélecteur de période -->
-    <div class="dashboard-header">
+<div class="dashboard">
+    <!-- En-tête -->
+    <div class="dashboard__header">
         <div>
-            <h1>Dashboard CRM</h1>
-            <p>Statistiques globales, pipeline, conversions et performances</p>
+            <h1 class="dashboard__title">Dashboard</h1>
+            <p class="dashboard__subtitle">Vue analytique de vos performances commerciales</p>
         </div>
-        <div class="period-selector">
-            <button class="period-btn active">7 jours</button>
-            <button class="period-btn">30 jours</button>
-            <button class="period-btn">3 mois</button>
-            <button class="period-btn">Cette année</button>
+        <div class="dashboard__date">
+            {{ now()->format('d M Y') }}
         </div>
     </div>
 
-    <!-- KPI Cards - Stats principales -->
+    <!-- KPIs -->
     <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #4361ee15, #4361ee25)">
-                <i class="fas fa-users" style="color: #4361ee"></i>
+        <div class="kpi-card kpi-card--total">
+            <div class="kpi-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Total Leads</span>
-                <span class="kpi-value">1,284</span>
-                <span class="kpi-trend positive">
-                    <i class="fas fa-arrow-up"></i> +12.5%
-                </span>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #06d6a015, #06d6a025)">
-                <i class="fas fa-fire" style="color: #06d6a0"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Leads Chauds</span>
-                <span class="kpi-value">342</span>
-                <span class="kpi-trend positive">
-                    <i class="fas fa-arrow-up"></i> +8.2%
-                </span>
+            <div class="kpi-card__content">
+                <span class="kpi-card__label">Total Leads</span>
+                <span class="kpi-card__value">{{ $totalLeads }}</span>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #ffb70315, #ffb70325)">
-                <i class="fas fa-clock" style="color: #ffb703"></i>
+        <div class="kpi-card kpi-card--hot">
+            <div class="kpi-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                </svg>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">En cours</span>
-                <span class="kpi-value">573</span>
-                <span class="kpi-trend">
-                    <i class="fas fa-minus"></i> Stable
-                </span>
-            </div>
-        </div>
-
-        <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #ef476f15, #ef476f25)">
-                <i class="fas fa-times-circle" style="color: #ef476f"></i>
-            </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Taux de conversion</span>
-                <span class="kpi-value">23.6%</span>
-                <span class="kpi-trend positive">
-                    <i class="fas fa-arrow-up"></i> +5.4%
-                </span>
+            <div class="kpi-card__content">
+                <span class="kpi-card__label">Leads Chauds</span>
+                <span class="kpi-card__value">{{ $leadsChauds }}</span>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-icon" style="background: linear-gradient(135deg, #7209b715, #7209b725)">
-                <i class="fas fa-check-circle" style="color: #7209b7"></i>
+        <div class="kpi-card kpi-card--appointment">
+            <div class="kpi-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
             </div>
-            <div class="kpi-content">
-                <span class="kpi-label">Vendus</span>
-                <span class="kpi-value">128</span>
-                <span class="kpi-trend positive">
-                    <i class="fas fa-arrow-up"></i> +15.3%
+            <div class="kpi-card__content">
+                <span class="kpi-card__label">RDV Pris</span>
+                <span class="kpi-card__value">{{ $rdvPris }}</span>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-card--sold">
+            <div class="kpi-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <div class="kpi-card__content">
+                <span class="kpi-card__label">Vendus</span>
+                <span class="kpi-card__value">{{ $ventes }}</span>
+            </div>
+        </div>
+
+        <div class="kpi-card kpi-card--conversion">
+            <div class="kpi-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 1 1-9-9" stroke-linecap="round"></path>
+                    <path d="M12 6v6l3 2"></path>
+                </svg>
+            </div>
+            <div class="kpi-card__content">
+                <span class="kpi-card__label">Taux Conversion</span>
+                <span class="kpi-card__value">{{ $tauxConversion }}%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="chart-grid">
+        <div class="chart-card">
+            <div class="chart-card__header">
+                <h3 class="chart-card__title">Répartition des Leads</h3>
+                <span class="chart-card__badge">Distribution</span>
+            </div>
+            <div class="chart-card__body">
+                <canvas id="heatChart" class="chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-card__header">
+                <h3 class="chart-card__title">Pipeline de Conversion</h3>
+                <span class="chart-card__badge">Funnel</span>
+            </div>
+            <div class="chart-card__body">
+                <canvas id="pipelineChart" class="chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques de Complétude Globales -->
+    <div class="completion-section">
+        <div class="completion-section__header">
+            <div>
+                <h3 class="completion-section__title">Complétude des Leads</h3>
+                <p class="completion-section__subtitle">Moyenne globale: <strong>{{ $averageCompletion }}%</strong></p>
+            </div>
+            <span class="completion-section__badge">Qualité des données</span>
+        </div>
+
+        <div class="completion-grid">
+            <!-- 0-20% -->
+            <div class="completion-card">
+                <div class="completion-card__header">
+                    <span class="completion-card__label">0 - 20%</span>
+                    <span class="completion-card__value">{{ $completionStats['0-20%'] }}</span>
+                </div>
+                <div class="completion-bar">
+                    <div class="completion-bar__fill completion-bar__fill--low" 
+                         style="width: {{ $totalLeads > 0 ? ($completionStats['0-20%'] / $totalLeads * 100) : 0 }}%">
+                    </div>
+                </div>
+                <span class="completion-card__percentage">
+                    {{ $totalLeads > 0 ? round($completionStats['0-20%'] / $totalLeads * 100) : 0 }}%
+                </span>
+            </div>
+
+            <!-- 21-40% -->
+            <div class="completion-card">
+                <div class="completion-card__header">
+                    <span class="completion-card__label">21 - 40%</span>
+                    <span class="completion-card__value">{{ $completionStats['21-40%'] }}</span>
+                </div>
+                <div class="completion-bar">
+                    <div class="completion-bar__fill completion-bar__fill--medium-low" 
+                         style="width: {{ $totalLeads > 0 ? ($completionStats['21-40%'] / $totalLeads * 100) : 0 }}%">
+                    </div>
+                </div>
+                <span class="completion-card__percentage">
+                    {{ $totalLeads > 0 ? round($completionStats['21-40%'] / $totalLeads * 100) : 0 }}%
+                </span>
+            </div>
+
+            <!-- 41-60% -->
+            <div class="completion-card">
+                <div class="completion-card__header">
+                    <span class="completion-card__label">41 - 60%</span>
+                    <span class="completion-card__value">{{ $completionStats['41-60%'] }}</span>
+                </div>
+                <div class="completion-bar">
+                    <div class="completion-bar__fill completion-bar__fill--medium" 
+                         style="width: {{ $totalLeads > 0 ? ($completionStats['41-60%'] / $totalLeads * 100) : 0 }}%">
+                    </div>
+                </div>
+                <span class="completion-card__percentage">
+                    {{ $totalLeads > 0 ? round($completionStats['41-60%'] / $totalLeads * 100) : 0 }}%
+                </span>
+            </div>
+
+            <!-- 61-80% -->
+            <div class="completion-card">
+                <div class="completion-card__header">
+                    <span class="completion-card__label">61 - 80%</span>
+                    <span class="completion-card__value">{{ $completionStats['61-80%'] }}</span>
+                </div>
+                <div class="completion-bar">
+                    <div class="completion-bar__fill completion-bar__fill--medium-high" 
+                         style="width: {{ $totalLeads > 0 ? ($completionStats['61-80%'] / $totalLeads * 100) : 0 }}%">
+                    </div>
+                </div>
+                <span class="completion-card__percentage">
+                    {{ $totalLeads > 0 ? round($completionStats['61-80%'] / $totalLeads * 100) : 0 }}%
+                </span>
+            </div>
+
+            <!-- 81-100% -->
+            <div class="completion-card">
+                <div class="completion-card__header">
+                    <span class="completion-card__label">81 - 100%</span>
+                    <span class="completion-card__value">{{ $completionStats['81-100%'] }}</span>
+                </div>
+                <div class="completion-bar">
+                    <div class="completion-bar__fill completion-bar__fill--high" 
+                         style="width: {{ $totalLeads > 0 ? ($completionStats['81-100%'] / $totalLeads * 100) : 0 }}%">
+                    </div>
+                </div>
+                <span class="completion-card__percentage">
+                    {{ $totalLeads > 0 ? round($completionStats['81-100%'] / $totalLeads * 100) : 0 }}%
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- Graphiques section -->
-    <div class="charts-grid">
-        <!-- Pipeline Funnel Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Pipeline des leads</h3>
-                <div class="chart-actions">
-                    <button class="chart-btn active">Vue funnel</button>
-                    <button class="chart-btn">Vue barres</button>
-                </div>
+    <!-- Tableau des performances par client avec répartition des pourcentages -->
+    <div class="table-card">
+        <div class="table-card__header">
+            <div>
+                <h3 class="table-card__title">Performance par utilisateur</h3>
+                <p class="table-card__subtitle">Répartition des leads par niveau de complétude</p>
             </div>
-            <div class="chart-body">
-                <!-- Funnel statique -->
-                <div class="funnel-container">
-                    <div class="funnel-stage" style="width: 100%">
-                        <div class="stage-label">
-                            <span>Prospection</span>
-                            <span class="stage-value">1,284 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 60px; background: linear-gradient(90deg, #4361ee, #7209b7)">
-                            <div class="stage-percent">100%</div>
-                        </div>
-                    </div>
-                    <div class="funnel-stage" style="width: 85%">
-                        <div class="stage-label">
-                            <span>Contact établis</span>
-                            <span class="stage-value">1,091 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 50px; background: linear-gradient(90deg, #4361ee, #7209b7)">
-                            <div class="stage-percent">85%</div>
-                        </div>
-                    </div>
-                    <div class="funnel-stage" style="width: 62%">
-                        <div class="stage-label">
-                            <span>Qualifiés</span>
-                            <span class="stage-value">796 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 45px; background: linear-gradient(90deg, #4361ee, #7209b7)">
-                            <div class="stage-percent">62%</div>
-                        </div>
-                    </div>
-                    <div class="funnel-stage" style="width: 45%">
-                        <div class="stage-label">
-                            <span>En négociation</span>
-                            <span class="stage-value">578 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 40px; background: linear-gradient(90deg, #4361ee, #7209b7)">
-                            <div class="stage-percent">45%</div>
-                        </div>
-                    </div>
-                    <div class="funnel-stage" style="width: 28%">
-                        <div class="stage-label">
-                            <span>Devis envoyés</span>
-                            <span class="stage-value">360 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 35px; background: linear-gradient(90deg, #4361ee, #7209b7)">
-                            <div class="stage-percent">28%</div>
-                        </div>
-                    </div>
-                    <div class="funnel-stage" style="width: 15%">
-                        <div class="stage-label">
-                            <span>Converti</span>
-                            <span class="stage-value">193 leads</span>
-                        </div>
-                        <div class="stage-bar" style="height: 30px; background: linear-gradient(90deg, #06d6a0, #0b8a6b)">
-                            <div class="stage-percent">15%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <span class="table-card__count">{{ count($clientsPerformance) }} utilisateurs</span>
         </div>
-
-        <!-- Répartition par source -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Sources d'acquisition</h3>
-                <div class="chart-legend">
-                    <span class="legend-item"><span class="legend-color" style="background: #4361ee"></span>Google</span>
-                    <span class="legend-item"><span class="legend-color" style="background: #7209b7"></span>LinkedIn</span>
-                    <span class="legend-item"><span class="legend-color" style="background: #06d6a0"></span>Instagram</span>
-                </div>
-            </div>
-            <div class="chart-body">
-                <div class="pie-chart-container">
-                    <!-- Donut chart statique -->
-                    <div class="donut-chart">
-                        <svg viewBox="0 0 100 100" class="donut-svg">
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#e2e8f0" stroke-width="12" />
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#4361ee" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="62.8" transform="rotate(-90 50 50)" />
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#7209b7" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="138.16" transform="rotate(-90 50 50)" />
-                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#06d6a0" stroke-width="12" stroke-dasharray="251.2" stroke-dashoffset="188.4" transform="rotate(-90 50 50)" />
-                        </svg>
-                        <div class="donut-center">
-                            <span class="donut-total">1,284</span>
-                            <span class="donut-label">Total leads</span>
-                        </div>
-                    </div>
-                    <div class="pie-stats">
-                        <div class="pie-stat-item">
-                            <span class="stat-source">Google Ads</span>
-                            <span class="stat-percent">45%</span>
-                            <span class="stat-count">578 leads</span>
-                        </div>
-                        <div class="pie-stat-item">
-                            <span class="stat-source">LinkedIn</span>
-                            <span class="stat-percent">30%</span>
-                            <span class="stat-count">385 leads</span>
-                        </div>
-                        <div class="pie-stat-item">
-                            <span class="stat-source">Instagram</span>
-                            <span class="stat-percent">20%</span>
-                            <span class="stat-count">257 leads</span>
-                        </div>
-                        <div class="pie-stat-item">
-                            <span class="stat-source">Autres</span>
-                            <span class="stat-percent">5%</span>
-                            <span class="stat-count">64 leads</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Évolution mensuelle -->
-        <div class="chart-card full-width">
-            <div class="chart-header">
-                <h3>Évolution des leads</h3>
-                <div class="chart-legend">
-                    <span class="legend-item"><span class="legend-color" style="background: #4361ee"></span>Nouveaux</span>
-                    <span class="legend-item"><span class="legend-color" style="background: #06d6a0"></span>Convertis</span>
-                </div>
-            </div>
-            <div class="chart-body">
-                <div class="bar-chart">
-                    <div class="bar-chart-container">
-                        <!-- Mois -->
-                        <div class="bar-group">
-                            <div class="bar-label">Jan</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 80px" title="145 leads">
-                                    <span class="bar-value">145</span>
-                                </div>
-                                <div class="bar green" style="height: 45px" title="32 leads">
-                                    <span class="bar-value">32</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-label">Fév</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 95px" title="168 leads">
-                                    <span class="bar-value">168</span>
-                                </div>
-                                <div class="bar green" style="height: 52px" title="38 leads">
-                                    <span class="bar-value">38</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-label">Mar</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 110px" title="195 leads">
-                                    <span class="bar-value">195</span>
-                                </div>
-                                <div class="bar green" style="height: 65px" title="47 leads">
-                                    <span class="bar-value">47</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-label">Avr</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 135px" title="234 leads">
-                                    <span class="bar-value">234</span>
-                                </div>
-                                <div class="bar green" style="height: 78px" title="56 leads">
-                                    <span class="bar-value">56</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-label">Mai</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 120px" title="212 leads">
-                                    <span class="bar-value">212</span>
-                                </div>
-                                <div class="bar green" style="height: 71px" title="51 leads">
-                                    <span class="bar-value">51</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-label">Juin</div>
-                            <div class="bars">
-                                <div class="bar blue" style="height: 98px" title="178 leads">
-                                    <span class="bar-value">178</span>
-                                </div>
-                                <div class="bar green" style="height: 62px" title="44 leads">
-                                    <span class="bar-value">44</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Distribution par chaleur -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Répartition par chaleur</h3>
-            </div>
-            <div class="chart-body">
-                <div class="distribution-list">
-                    <div class="dist-item">
-                        <div class="dist-label">
-                            <span class="dist-color" style="background: #ef476f"></span>
-                            <span>Froid</span>
-                        </div>
-                        <div class="dist-bar-container">
-                            <div class="dist-bar" style="width: 25%; background: #ef476f"></div>
-                        </div>
-                        <span class="dist-value">321</span>
-                    </div>
-                    <div class="dist-item">
-                        <div class="dist-label">
-                            <span class="dist-color" style="background: #ffb703"></span>
-                            <span>Tiède</span>
-                        </div>
-                        <div class="dist-bar-container">
-                            <div class="dist-bar" style="width: 35%; background: #ffb703"></div>
-                        </div>
-                        <span class="dist-value">449</span>
-                    </div>
-                    <div class="dist-item">
-                        <div class="dist-label">
-                            <span class="dist-color" style="background: #06d6a0"></span>
-                            <span>Chaud</span>
-                        </div>
-                        <div class="dist-bar-container">
-                            <div class="dist-bar" style="width: 27%; background: #06d6a0"></div>
-                        </div>
-                        <span class="dist-value">342</span>
-                    </div>
-                    <div class="dist-item">
-                        <div class="dist-label">
-                            <span class="dist-color" style="background: #4361ee"></span>
-                            <span>Vendu</span>
-                        </div>
-                        <div class="dist-bar-container">
-                            <div class="dist-bar" style="width: 10%; background: #4361ee"></div>
-                        </div>
-                        <span class="dist-value">128</span>
-                    </div>
-                    <div class="dist-item">
-                        <div class="dist-label">
-                            <span class="dist-color" style="background: #64748b"></span>
-                            <span>Mort</span>
-                        </div>
-                        <div class="dist-bar-container">
-                            <div class="dist-bar" style="width: 3%; background: #64748b"></div>
-                        </div>
-                        <span class="dist-value">44</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Performance des canaux -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>Performance par canal</h3>
-            </div>
-            <div class="chart-body">
-                <div class="channels-stats">
-                    <div class="channel-item">
-                        <div class="channel-icon" style="background: #4361ee15; color: #4361ee">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="channel-details">
-                            <span class="channel-name">Email</span>
-                            <span class="channel-rate">68% taux d'ouverture</span>
-                            <div class="channel-bar">
-                                <div class="channel-bar-fill" style="width: 68%; background: #4361ee"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="channel-icon" style="background: #06d6a015; color: #06d6a0">
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div class="channel-details">
-                            <span class="channel-name">WhatsApp</span>
-                            <span class="channel-rate">82% taux de réponse</span>
-                            <div class="channel-bar">
-                                <div class="channel-bar-fill" style="width: 82%; background: #06d6a0"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="channel-icon" style="background: #7209b715; color: #7209b7">
-                            <i class="fab fa-linkedin"></i>
-                        </div>
-                        <div class="channel-details">
-                            <span class="channel-name">LinkedIn</span>
-                            <span class="channel-rate">45% taux d'acceptation</span>
-                            <div class="channel-bar">
-                                <div class="channel-bar-fill" style="width: 45%; background: #7209b7"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="channel-item">
-                        <div class="channel-icon" style="background: #ffb70315; color: #ffb703">
-                            <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <div class="channel-details">
-                            <span class="channel-name">Téléphone</span>
-                            <span class="channel-rate">38% taux de joignabilité</span>
-                            <div class="channel-bar">
-                                <div class="channel-bar-fill" style="width: 38%; background: #ffb703"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tableau récent des leads -->
-    <div class="recent-leads-card">
-        <div class="recent-leads-header">
-            <h3>Derniers leads ajoutés</h3>
-            <a href="#" class="view-all-link">Voir tous <i class="fas fa-arrow-right"></i></a>
-        </div>
-        <div class="recent-leads-table">
-            <table>
-                <thead>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="table__head">
                     <tr>
-                        <th>Lead</th>
-                        <th>Source</th>
-                        <th>Chaleur</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
+                        <th class="table__th">Utilisateur</th>
+                        <th class="table__th">Rôle</th>
+                        <th class="table__th">Total Leads</th>
+                        <th class="table__th">Scrappings</th>
+                        <th class="table__th" colspan="5">Répartition par complétude</th>
+                    </tr>
+                    <tr class="table__subhead">
+                        <th colspan="3"></th>
+                        <th></th>
+                        <th class="table__th table__th--small">0-20%</th>
+                        <th class="table__th table__th--small">21-40%</th>
+                        <th class="table__th table__th--small">41-60%</th>
+                        <th class="table__th table__th--small">61-80%</th>
+                        <th class="table__th table__th--small">81-100%</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="recent-lead-info">
-                                <div class="recent-avatar" style="background: linear-gradient(135deg, #4361ee, #7209b7)">JD</div>
-                                <div>
-                                    <div class="recent-name">Jean Dupont</div>
-                                    <div class="recent-company">TechCorp SAS</div>
-                                </div>
+                <tbody class="table__body">
+                    @forelse($clientsPerformance as $client)
+                    <tr class="table__row {{ $client['email'] == $sessionClient['email'] ? 'table__row--current' : '' }}">
+                        <td class="table__td">
+                            <div class="user-info">
+                                <span class="user-info__name">{{ $client['name'] }}</span>
+                                @if($client['email'] == $sessionClient['email'])
+                                    <span class="user-info__badge">Vous</span>
+                                @endif
                             </div>
                         </td>
-                        <td><span class="badge source">Google Ads</span></td>
-                        <td><span class="badge chaleur chaud">Chaud</span></td>
-                        <td><span class="badge statut encours">En cours</span></td>
-                        <td>15/02/2025</td>
-                        <td><button class="table-action-btn"><i class="fas fa-eye"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="recent-lead-info">
-                                <div class="recent-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c)">MM</div>
-                                <div>
-                                    <div class="recent-name">Marie Martin</div>
-                                    <div class="recent-company">Design Studio</div>
+                        <td class="table__td">
+                            <span class="role-badge role-badge--{{ $client['role'] }}">
+                                {{ ucfirst($client['role']) }}
+                            </span>
+                        </td>
+                        <td class="table__td">
+                            <span class="stat-number stat-number--total">{{ $client['leads_count'] }}</span>
+                        </td>
+                        <td class="table__td">
+                            <span class="stat-number">{{ $client['scraping_count'] }}</span>
+                        </td>
+                        
+                        <!-- 0-20% -->
+                        <td class="table__td table__td--percentage">
+                            <div class="percentage-cell">
+                                <span class="percentage-cell__value">{{ $client['percentage_breakdown']['0-20%'] }}</span>
+                                <div class="percentage-cell__bar">
+                                    <div class="percentage-cell__fill percentage-cell__fill--low" 
+                                         style="width: {{ $client['leads_count'] > 0 ? ($client['percentage_breakdown']['0-20%'] / $client['leads_count'] * 100) : 0 }}%">
+                                    </div>
                                 </div>
+                                <span class="percentage-cell__percent">
+                                    {{ $client['leads_count'] > 0 ? round($client['percentage_breakdown']['0-20%'] / $client['leads_count'] * 100) : 0 }}%
+                                </span>
                             </div>
                         </td>
-                        <td><span class="badge source">LinkedIn</span></td>
-                        <td><span class="badge chaleur tiede">Tiède</span></td>
-                        <td><span class="badge statut relance">À relancer</span></td>
-                        <td>14/02/2025</td>
-                        <td><button class="table-action-btn"><i class="fas fa-eye"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="recent-lead-info">
-                                <div class="recent-avatar" style="background: linear-gradient(135deg, #06d6a0, #0b8a6b)">PL</div>
-                                <div>
-                                    <div class="recent-name">Pierre Laurent</div>
-                                    <div class="recent-company">Innovation Lab</div>
+                        
+                        <!-- 21-40% -->
+                        <td class="table__td table__td--percentage">
+                            <div class="percentage-cell">
+                                <span class="percentage-cell__value">{{ $client['percentage_breakdown']['21-40%'] }}</span>
+                                <div class="percentage-cell__bar">
+                                    <div class="percentage-cell__fill percentage-cell__fill--medium-low" 
+                                         style="width: {{ $client['leads_count'] > 0 ? ($client['percentage_breakdown']['21-40%'] / $client['leads_count'] * 100) : 0 }}%">
+                                    </div>
                                 </div>
+                                <span class="percentage-cell__percent">
+                                    {{ $client['leads_count'] > 0 ? round($client['percentage_breakdown']['21-40%'] / $client['leads_count'] * 100) : 0 }}%
+                                </span>
                             </div>
                         </td>
-                        <td><span class="badge source">Instagram</span></td>
-                        <td><span class="badge chaleur chaud">Chaud</span></td>
-                        <td><span class="badge statut encours">En cours</span></td>
-                        <td>13/02/2025</td>
-                        <td><button class="table-action-btn"><i class="fas fa-eye"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="recent-lead-info">
-                                <div class="recent-avatar" style="background: linear-gradient(135deg, #ffb703, #f57c00)">SD</div>
-                                <div>
-                                    <div class="recent-name">Sophie Dubois</div>
-                                    <div class="recent-company">Consulting Pro</div>
+                        
+                        <!-- 41-60% -->
+                        <td class="table__td table__td--percentage">
+                            <div class="percentage-cell">
+                                <span class="percentage-cell__value">{{ $client['percentage_breakdown']['41-60%'] }}</span>
+                                <div class="percentage-cell__bar">
+                                    <div class="percentage-cell__fill percentage-cell__fill--medium" 
+                                         style="width: {{ $client['leads_count'] > 0 ? ($client['percentage_breakdown']['41-60%'] / $client['leads_count'] * 100) : 0 }}%">
+                                    </div>
                                 </div>
+                                <span class="percentage-cell__percent">
+                                    {{ $client['leads_count'] > 0 ? round($client['percentage_breakdown']['41-60%'] / $client['leads_count'] * 100) : 0 }}%
+                                </span>
                             </div>
                         </td>
-                        <td><span class="badge source">Recommandation</span></td>
-                        <td><span class="badge chaleur tiede">Tiède</span></td>
-                        <td><span class="badge statut devis">R1 prix</span></td>
-                        <td>12/02/2025</td>
-                        <td><button class="table-action-btn"><i class="fas fa-eye"></i></button></td>
+                        
+                        <!-- 61-80% -->
+                        <td class="table__td table__td--percentage">
+                            <div class="percentage-cell">
+                                <span class="percentage-cell__value">{{ $client['percentage_breakdown']['61-80%'] }}</span>
+                                <div class="percentage-cell__bar">
+                                    <div class="percentage-cell__fill percentage-cell__fill--medium-high" 
+                                         style="width: {{ $client['leads_count'] > 0 ? ($client['percentage_breakdown']['61-80%'] / $client['leads_count'] * 100) : 0 }}%">
+                                    </div>
+                                </div>
+                                <span class="percentage-cell__percent">
+                                    {{ $client['leads_count'] > 0 ? round($client['percentage_breakdown']['61-80%'] / $client['leads_count'] * 100) : 0 }}%
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <!-- 81-100% -->
+                        <td class="table__td table__td--percentage">
+                            <div class="percentage-cell">
+                                <span class="percentage-cell__value">{{ $client['percentage_breakdown']['81-100%'] }}</span>
+                                <div class="percentage-cell__bar">
+                                    <div class="percentage-cell__fill percentage-cell__fill--high" 
+                                         style="width: {{ $client['leads_count'] > 0 ? ($client['percentage_breakdown']['81-100%'] / $client['leads_count'] * 100) : 0 }}%">
+                                    </div>
+                                </div>
+                                <span class="percentage-cell__percent">
+                                    {{ $client['leads_count'] > 0 ? round($client['percentage_breakdown']['81-100%'] / $client['leads_count'] * 100) : 0 }}%
+                                </span>
+                            </div>
+                        </td>
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" class="table__empty">
+                            <div class="empty-state">
+                                <svg class="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <p class="empty-state__text">Aucun utilisateur trouvé</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration commune des graphiques
+    Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#64748b';
+
+    // Graphique en donut
+    new Chart(document.getElementById('heatChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Froid', 'Tiède', 'Chaud', 'Mort'],
+            datasets: [{
+                data: [{{ $froid }}, {{ $tiede }}, {{ $chaud }}, {{ $mort }}],
+                backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#1e293b'],
+                borderWidth: 0,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#cbd5e1',
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            }
+        }
+    });
+
+    // Graphique en barres
+    new Chart(document.getElementById('pipelineChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Total Leads', 'RDV Pris', 'Vendus'],
+            datasets: [{
+                data: [{{ $totalLeads }}, {{ $rdvPris }}, {{ $ventes }}],
+                backgroundColor: ['#6366f1', '#f59e0b', '#10b981'],
+                borderRadius: 6,
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleColor: '#f8fafc',
+                    bodyColor: '#cbd5e1',
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e2e8f0',
+                        drawBorder: false
+                    },
+                    border: { display: false }
+                },
+                x: {
+                    grid: { display: false },
+                    border: { display: false }
+                }
+            }
+        }
+    });
+});
+</script>
+
 <style>
-    /* Reset et variables */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+/* Variables */
+:root {
+    --primary: #6366f1;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --dark: #0f172a;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-500: #64748b;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+    --radius: 12px;
+}
+
+/* Layout principal */
+.dashboard {
+    padding: 2rem;
+    background: var(--gray-50);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* En-tête */
+.dashboard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+}
+
+.dashboard__subtitle {
+    color: var(--gray-500);
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+}
+
+.dashboard__date {
+    background: var(--gray-900);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    box-shadow: var(--shadow-md);
+}
+
+/* Grille KPI */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.kpi-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.kpi-card--total .kpi-card__icon { background: #e0e7ff; color: var(--primary); }
+.kpi-card--hot .kpi-card__icon { background: #fee2e2; color: var(--danger); }
+.kpi-card--appointment .kpi-card__icon { background: #fef3c7; color: var(--warning); }
+.kpi-card--sold .kpi-card__icon { background: #d1fae5; color: var(--success); }
+.kpi-card--conversion .kpi-card__icon { background: #e2e8f0; color: var(--gray-900); }
+
+.kpi-card__content {
+    flex: 1;
+}
+
+.kpi-card__label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: 0.25rem;
+}
+
+.kpi-card__value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+}
+
+/* Grille graphiques */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.chart-card__header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.chart-card__badge {
+    background: var(--gray-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.chart-card__body {
+    padding: 1.5rem;
+    height: 280px;
+    position: relative;
+}
+
+.chart {
+    width: 100%;
+    height: 100%;
+}
+
+/* Section Complétude */
+.completion-section {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.completion-section__header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.completion-section__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.completion-section__subtitle {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.completion-section__subtitle strong {
+    color: var(--gray-900);
+    font-weight: 600;
+}
+
+.completion-section__badge {
+    background: var(--gray-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.completion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.completion-card {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.completion-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.completion-card__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.completion-card__value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.completion-bar {
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.completion-bar__fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.completion-bar__fill--low { background: var(--danger); }
+.completion-bar__fill--medium-low { background: var(--warning); }
+.completion-bar__fill--medium { background: #3b82f6; }
+.completion-bar__fill--medium-high { background: #8b5cf6; }
+.completion-bar__fill--high { background: var(--success); }
+
+.completion-card__percentage {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-500);
+}
+
+/* Tableau des performances */
+.table-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    margin-top: 2rem;
+}
+
+.table-card__header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.table-card__subtitle {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.table-card__count {
+    background: var(--gray-100);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table__head {
+    background: var(--gray-50);
+}
+
+.table__th {
+    text-align: left;
+    padding: 1rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-500);
+    white-space: nowrap;
+}
+
+.table__th--small {
+    font-size: 0.7rem;
+    text-align: center;
+    min-width: 80px;
+}
+
+.table__subhead .table__th {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background: var(--gray-100);
+}
+
+.table__td {
+    padding: 1rem 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+    font-size: 0.875rem;
+}
+
+.table__td--percentage {
+    padding: 0.75rem 0.5rem;
+}
+
+.table__row:hover {
+    background: var(--gray-50);
+}
+
+.table__row--current {
+    background: #e0e7ff;
+}
+
+.table__row--current:hover {
+    background: #c7d2fe;
+}
+
+/* User info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.user-info__name {
+    font-weight: 500;
+    color: var(--gray-900);
+}
+
+.user-info__badge {
+    background: var(--primary);
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Role badge */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.role-badge--admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-badge--user {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Stat number */
+.stat-number {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.stat-number--total {
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+/* Percentage cell */
+.percentage-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 80px;
+}
+
+.percentage-cell__value {
+    font-weight: 600;
+    color: var(--gray-900);
+    font-size: 0.875rem;
+}
+
+.percentage-cell__bar {
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: 9999px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.percentage-cell__fill {
+    height: 100%;
+    border-radius: 9999px;
+}
+
+.percentage-cell__fill--low { background: var(--danger); }
+.percentage-cell__fill--medium-low { background: var(--warning); }
+.percentage-cell__fill--medium { background: #3b82f6; }
+.percentage-cell__fill--medium-high { background: #8b5cf6; }
+.percentage-cell__fill--high { background: var(--success); }
+
+.percentage-cell__percent {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+/* État vide */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-state__icon {
+    color: var(--gray-200);
+    margin-bottom: 1rem;
+}
+
+.empty-state__text {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 1rem;
     }
 
-    :root {
-        --primary: #4361ee;
-        --primary-dark: #3a56d4;
-        --secondary: #7209b7;
-        --success: #06d6a0;
-        --warning: #ffb703;
-        --danger: #ef476f;
-        --dark: #1e293b;
-        --light: #f8fafc;
-        --gray: #64748b;
-        --border: #e2e8f0;
+    .dashboard__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f1f5f9;
-    }
-
-    /* Dashboard container */
-    .dashboard-container {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 24px;
-    }
-
-    /* Header */
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-bottom: 28px;
-    }
-
-    .dashboard-header h1 {
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0 0 8px 0;
-        letter-spacing: -0.5px;
-    }
-
-    .dashboard-header p {
-        color: var(--gray);
-        font-size: 15px;
-        margin: 0;
-    }
-
-    .period-selector {
-        display: flex;
-        gap: 8px;
-        background: white;
-        padding: 4px;
-        border-radius: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-
-    .period-btn {
-        padding: 10px 20px;
-        border-radius: 12px;
-        border: none;
-        background: transparent;
-        color: var(--gray);
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .period-btn.active {
-        background: var(--primary);
-        color: white;
-    }
-
-    /* KPI Grid */
     .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 20px;
-        margin-bottom: 28px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
     }
 
     .kpi-card {
-        background: white;
-        border-radius: 24px;
-        padding: 24px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-        border: 1px solid var(--border);
-        transition: all 0.3s;
+        padding: 1rem;
     }
 
-    .kpi-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.05);
-    }
-
-    .kpi-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    .kpi-content {
-        flex: 1;
-    }
-
-    .kpi-label {
-        display: block;
-        font-size: 13px;
-        color: var(--gray);
-        margin-bottom: 6px;
-        font-weight: 500;
-    }
-
-    .kpi-value {
-        display: block;
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--dark);
-        line-height: 1.2;
-        margin-bottom: 4px;
-    }
-
-    .kpi-trend {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 12px;
-        font-weight: 500;
-        padding: 4px 8px;
-        border-radius: 20px;
-        background: var(--light);
-    }
-
-    .kpi-trend.positive {
-        color: var(--success);
-    }
-
-    .kpi-trend i {
-        font-size: 10px;
-    }
-
-    /* Charts Grid */
-    .charts-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 28px;
-    }
-
-    .chart-card {
-        background: white;
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-        border: 1px solid var(--border);
-    }
-
-    .chart-card.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-bottom: 20px;
-    }
-
-    .chart-header h3 {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .chart-actions {
-        display: flex;
-        gap: 8px;
-        background: var(--light);
-        padding: 4px;
-        border-radius: 12px;
-    }
-
-    .chart-btn {
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: none;
-        background: transparent;
-        color: var(--gray);
-        font-size: 12px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .chart-btn.active {
-        background: white;
-        color: var(--primary);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-
-    .chart-legend {
-        display: flex;
-        gap: 16px;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 12px;
-        color: var(--gray);
-    }
-
-    .legend-color {
-        width: 10px;
-        height: 10px;
-        border-radius: 4px;
-    }
-
-    /* Funnel Chart */
-    .funnel-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 0;
-    }
-
-    .funnel-stage {
-        transition: all 0.3s;
-    }
-
-    .stage-label {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 6px;
-        font-size: 13px;
-        color: var(--gray);
-    }
-
-    .stage-value {
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .stage-bar {
-        width: 100%;
-        border-radius: 12px;
-        position: relative;
-        margin-bottom: 8px;
-        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
-    }
-
-    .stage-percent {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: white;
-        font-size: 12px;
-        font-weight: 600;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-
-    /* Pie Chart */
-    .pie-chart-container {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        flex-wrap: wrap;
-    }
-
-    .donut-chart {
-        position: relative;
-        width: 160px;
-        height: 160px;
-    }
-
-    .donut-svg {
-        width: 100%;
-        height: 100%;
-        transform: rotate(-90deg);
-    }
-
-    .donut-center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-
-    .donut-total {
-        display: block;
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--dark);
-        line-height: 1.2;
-    }
-
-    .donut-label {
-        font-size: 11px;
-        color: var(--gray);
-    }
-
-    .pie-stats {
-        flex: 1;
-    }
-
-    .pie-stat-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-        padding: 8px 12px;
-        background: var(--light);
-        border-radius: 12px;
-    }
-
-    .stat-source {
-        flex: 1;
-        font-size: 13px;
-        color: var(--dark);
-        font-weight: 500;
-    }
-
-    .stat-percent {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary);
-    }
-
-    .stat-count {
-        font-size: 12px;
-        color: var(--gray);
-    }
-
-    /* Bar Chart */
-    .bar-chart-container {
-        display: flex;
-        justify-content: space-around;
-        align-items: flex-end;
-        gap: 16px;
-        padding: 20px 0;
-        min-height: 240px;
-    }
-
-    .bar-group {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .bar-label {
-        font-size: 12px;
-        color: var(--gray);
-        font-weight: 500;
-    }
-
-    .bars {
-        display: flex;
-        gap: 8px;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .bar {
-        width: 30px;
-        border-radius: 8px 8px 0 0;
-        position: relative;
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-
-    .bar.blue {
-        background: linear-gradient(180deg, var(--primary), var(--secondary));
-    }
-
-    .bar.green {
-        background: linear-gradient(180deg, var(--success), #0b8a6b);
-    }
-
-    .bar-value {
-        position: absolute;
-        top: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 10px;
-        font-weight: 600;
-        color: var(--gray);
-        opacity: 0;
-        transition: opacity 0.2s;
-    }
-
-    .bar:hover .bar-value {
-        opacity: 1;
-    }
-
-    /* Distribution list */
-    .distribution-list {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .dist-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .dist-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        width: 80px;
-        font-size: 13px;
-        color: var(--dark);
-    }
-
-    .dist-color {
-        width: 10px;
-        height: 10px;
-        border-radius: 4px;
-    }
-
-    .dist-bar-container {
-        flex: 1;
-        height: 8px;
-        background: var(--light);
-        border-radius: 20px;
-        overflow: hidden;
-    }
-
-    .dist-bar {
-        height: 100%;
-        border-radius: 20px;
-        transition: width 0.3s;
-    }
-
-    .dist-value {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--dark);
-        min-width: 40px;
-        text-align: right;
-    }
-
-    /* Channels stats */
-    .channels-stats {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .channel-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 8px;
-        border-radius: 12px;
-        transition: all 0.2s;
-    }
-
-    .channel-item:hover {
-        background: var(--light);
-    }
-
-    .channel-icon {
+    .kpi-card__icon {
         width: 40px;
         height: 40px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
     }
 
-    .channel-details {
-        flex: 1;
+    .kpi-card__value {
+        font-size: 1.5rem;
     }
 
-    .channel-name {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 4px;
+    .chart-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
-    .channel-rate {
-        display: block;
-        font-size: 11px;
-        color: var(--gray);
-        margin-bottom: 6px;
+    .chart-card__body {
+        height: 240px;
+        padding: 1rem;
     }
 
-    .channel-bar {
-        height: 6px;
-        background: var(--light);
-        border-radius: 10px;
-        overflow: hidden;
+    .completion-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 1rem;
     }
 
-    .channel-bar-fill {
-        height: 100%;
-        border-radius: 10px;
-        transition: width 0.3s;
+    .table__td {
+        padding: 0.75rem 0.5rem;
     }
 
-    /* Recent leads card */
-    .recent-leads-card {
-        background: white;
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-        border: 1px solid var(--border);
+    .percentage-cell {
+        min-width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
     }
 
-    .recent-leads-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+    .kpi-card {
+        max-width: 100%;
     }
 
-    .recent-leads-header h3 {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--dark);
+    .completion-section__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
-    .view-all-link {
-        color: var(--primary);
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+    .table-card__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
-
-    .recent-leads-table {
-        overflow-x: auto;
-    }
-
-    .recent-leads-table table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .recent-leads-table th {
-        text-align: left;
-        padding: 12px 8px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid var(--border);
-    }
-
-    .recent-leads-table td {
-        padding: 16px 8px;
-        border-bottom: 1px solid var(--border);
-        vertical-align: middle;
-    }
-
-    .recent-lead-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .recent-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 600;
-        color: white;
-        text-transform: uppercase;
-    }
-
-    .recent-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .recent-company {
-        font-size: 11px;
-        color: var(--gray);
-    }
-
-    .badge.source {
-        background: var(--light);
-        color: var(--dark);
-        font-size: 11px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-weight: 500;
-    }
-
-    .badge.chaleur.chaud {
-        background: #fee2e2;
-        color: #991b1b;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .badge.chaleur.tiede {
-        background: #fff3cd;
-        color: #856404;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .badge.statut.encours {
-        background: #cfe2ff;
-        color: #052c65;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .badge.statut.relance {
-        background: #fff3cd;
-        color: #856404;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .badge.statut.devis {
-        background: #e9d5ff;
-        color: #6b21a8;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .table-action-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: white;
-        color: var(--gray);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .table-action-btn:hover {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-        .charts-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .dashboard-container {
-            padding: 16px;
-        }
-
-        .dashboard-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .period-selector {
-            width: 100%;
-            overflow-x: auto;
-            padding: 6px;
-        }
-
-        .kpi-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .pie-chart-container {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .bar-chart-container {
-            overflow-x: auto;
-            justify-content: flex-start;
-        }
-
-        .bar-group {
-            min-width: 60px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .kpi-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .chart-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .chart-legend {
-            flex-wrap: wrap;
-        }
-    }
+}
 </style>
-
-<!-- Pas de JavaScript nécessaire pour les graphiques statiques -->
 @endsection

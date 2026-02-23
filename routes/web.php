@@ -167,7 +167,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 });
 
 // CRM
-Route::get('/crm/dashboard', fn () => view('client.crm.dashboard'))->name('client.crm.dashboard');
 Route::get('/crm/leads', [LeadController::class, 'index'])
     ->name('client.crm.leads');
 
@@ -200,4 +199,5 @@ Route::get('/mails/envoyes', fn () => view('client.mails.envoyes'))->name('clien
 Route::get('/mails/recus', fn () => view('client.mails.recus'))->name('client.mails.recus');
 
 // routes/web.php
-
+Route::get('/dashboard', [\App\Http\Controllers\Client\DashboardController::class, 'index'])
+    ->name('client.crm.dashboard');

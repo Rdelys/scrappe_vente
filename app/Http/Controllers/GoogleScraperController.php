@@ -14,6 +14,25 @@ use App\Models\Lead;
 
 class GoogleScraperController extends Controller
 {
+
+private function getAccessibleClientIds()
+{
+    $sessionClient = session('client');
+
+    if (!$sessionClient) {
+        return [];
+    }
+
+    // Si superadmin → tous les clients de la même company
+    if ($sessionClient['role'] === 'superadmin') {
+        return \App\Models\Client::where('company', $sessionClient['company'])
+            ->pluck('id')
+            ->toArray();
+    }
+
+    // Sinon → uniquement lui
+    return [$sessionClient['id']];
+}
     /*
     |--------------------------------------------------------------------------
     | INDEX + FILTRE PAR NOM SCRAPPING
@@ -21,13 +40,13 @@ class GoogleScraperController extends Controller
     */
     public function index(Request $request)
 {
-    $clientId = session('client.id');
+    $clientIds = $this->getAccessibleClientIds();
 
-    if (!$clientId) {
-        return redirect()->back()->with('error', 'Session expirée');
-    }
+if (empty($clientIds)) {
+    return redirect()->back()->with('error', 'Session expirée');
+}
 
-    $query = GooglePlace::where('client_id', $clientId);
+$query = GooglePlace::whereIn('client_id', $clientIds);
 
     // 🔥 FILTRE PAR NOM SCRAPPING
     if ($request->filled('filter_scrapping')) {
@@ -36,10 +55,10 @@ class GoogleScraperController extends Controller
 
     $places = $query
         ->orderByDesc('rating')
-        ->paginate(10)
+        ->paginate(25) // ← MODIFIÉ ICI
         ->withQueryString(); // ⚠️ IMPORTANT POUR GARDER LE FILTRE EN PAGINATION
 
-    $scrappings = GooglePlace::where('client_id', $clientId)
+$scrappings = GooglePlace::whereIn('client_id', $clientIds)
         ->whereNotNull('nom_scrapping')
         ->distinct()
         ->pluck('nom_scrapping');
@@ -54,78 +73,98 @@ class GoogleScraperController extends Controller
     |--------------------------------------------------------------------------
     */
     public function scrape(Request $request)
-    {
-        $request->validate([
-            'query' => 'required|string|max:255',
-            'nom_scrapping' => 'required|string|max:255',
-        ]);
+{
+    $request->validate([
+        'query' => 'required|string|max:255',
+        'nom_scrapping' => 'required|string|max:255',
+    ]);
 
-        $clientId = session('client.id');
+    $clientId = session('client.id');
+    if (!$clientId) {
+        return back()->with('error', 'Session expirée');
+    }
 
-        if (!$clientId) {
-            return back()->with('error', 'Session expirée');
-        }
+    $queryInput = $request->input('query');
+    $nomScrapping = $request->input('nom_scrapping');
+    
+    $allResults = [];
+    $start = 0; // Paramètre de pagination pour SerpAPI
+    $maxResults = 5; // ← MODIFIÉ ICI (max 2000 résultats)
+    $pageCount = 0;
 
-        $queryInput = $request->input('query');
-        $nomScrapping = $request->input('nom_scrapping');
-
+    do {
         $response = Http::timeout(60)->get('https://serpapi.com/search.json', [
             'engine' => 'google_maps',
             'q' => $queryInput,
             'hl' => 'fr',
             'gl' => 'fr',
             'api_key' => config('services.serpapi.key'),
+            'start' => $start, // Ajout du paramètre de pagination
         ]);
 
         if (!$response->ok()) {
             Log::error('Erreur SerpAPI: ' . $response->body());
-            return back()->with('error', 'Erreur SerpAPI');
+            break;
         }
 
         $results = $response->json('local_results');
-
-        if (!$results) {
-            return back()->with('info', 'Aucun résultat trouvé');
+        
+        if (!$results || empty($results)) {
+            break;
         }
 
-        foreach ($results as $place) {
+        $allResults = array_merge($allResults, $results);
+        
+        // Vérifier s'il y a une page suivante
+        $nextPageToken = $response->json('serpapi_pagination.next');
+        $start += 20; // SerpAPI utilise généralement des incréments de 20
+        
+        $pageCount++;
+        
+        // Éviter les boucles infinies
+        if ($pageCount >= 10) break; // Max 200 résultats
+        
+    } while ($nextPageToken && count($allResults) < $maxResults);
 
-            $googlePlace = GooglePlace::updateOrCreate(
-                [
-                    'client_id' => $clientId,
-                    'website' => $place['website'] ?? null,
-                    'name' => $place['title'] ?? null,
-                ],
-                [
-                    'nom_scrapping' => $nomScrapping,
-                    'category' => $place['type'] ?? null,
-                    'address' => $place['address'] ?? null,
-                    'phone' => $place['phone'] ?? null,
-                    'rating' => $place['rating'] ?? null,
-                    'reviews_count' => $place['reviews'] ?? null,
-                ]
-            );
+    if (empty($allResults)) {
+        return back()->with('info', 'Aucun résultat trouvé');
+    }
 
-            // Lancer scraping site web
-            if ($googlePlace->website && !$googlePlace->contact_scraped_at) {
-                try {
-                    Artisan::queue('scrape:website', [
-                        'google_place_id' => $googlePlace->id,
-                        'url' => $googlePlace->website,
-                        '--client' => $clientId,
-                    ]);
+    foreach ($allResults as $place) {
+        $googlePlace = GooglePlace::updateOrCreate(
+            [
+                'client_id' => $clientId,
+                'website' => $place['website'] ?? null,
+                'name' => $place['title'] ?? null,
+            ],
+            [
+                'nom_scrapping' => $nomScrapping,
+                'category' => $place['type'] ?? null,
+                'address' => $place['address'] ?? null,
+                'phone' => $place['phone'] ?? null,
+                'rating' => $place['rating'] ?? null,
+                'reviews_count' => $place['reviews'] ?? null,
+            ]
+        );
 
-                    Log::info('Scraping website lancé: ' . $googlePlace->website);
-
-                } catch (\Exception $e) {
-                    Log::error('Erreur scraping website: ' . $e->getMessage());
-                }
+        // Lancer scraping site web
+        if ($googlePlace->website && !$googlePlace->contact_scraped_at) {
+            try {
+                Artisan::queue('scrape:website', [
+                    'google_place_id' => $googlePlace->id,
+                    'url' => $googlePlace->website,
+                    '--client' => $clientId,
+                ]);
+                Log::info('Scraping website lancé: ' . $googlePlace->website);
+            } catch (\Exception $e) {
+                Log::error('Erreur scraping website: ' . $e->getMessage());
             }
         }
-
-        return redirect()->route('client.google')
-            ->with('success', 'Scraping Google + Web terminé');
     }
+
+    return redirect()->route('client.google')
+        ->with('success', 'Scraping Google + Web terminé. ' . count($allResults) . ' résultats trouvés.');
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -134,9 +173,9 @@ class GoogleScraperController extends Controller
     */
     public function exportPdf(Request $request)
     {
-        $clientId = session('client.id');
+        $clientIds = $this->getAccessibleClientIds();
 
-        $query = GooglePlace::where('client_id', $clientId);
+$query = GooglePlace::whereIn('client_id', $clientIds);
 
         if ($request->filled('filter_scrapping')) {
             $query->where('nom_scrapping', $request->filter_scrapping);
@@ -178,9 +217,9 @@ class GoogleScraperController extends Controller
     */
     public function exportExcel(Request $request)
     {
-        $clientId = session('client.id');
+       $clientIds = $this->getAccessibleClientIds();
 
-        $query = GooglePlace::where('client_id', $clientId);
+$query = GooglePlace::whereIn('client_id', $clientIds);
 
         if ($request->filled('filter_scrapping')) {
             $query->where('nom_scrapping', $request->filter_scrapping);
@@ -304,21 +343,21 @@ class GoogleScraperController extends Controller
     */
     public function getScrapingStats()
     {
-        $clientId = session('client.id');
+        $clientIds = $this->getAccessibleClientIds();
 
-        if (!$clientId) {
-            return response()->json(['error' => 'Non authentifié'], 401);
-        }
+if (empty($clientIds)) {
+    return response()->json(['error' => 'Non authentifié'], 401);
+}
 
         $stats = [
-            'total' => GooglePlace::where('client_id', $clientId)->count(),
-            'with_website' => GooglePlace::where('client_id', $clientId)->whereNotNull('website')->count(),
-            'scraped' => GooglePlace::where('client_id', $clientId)->whereNotNull('contact_scraped_at')->count(),
-            'pending' => GooglePlace::where('client_id', $clientId)
+            'total' => GooglePlace::whereIn('client_id', $clientIds)->count(),
+            'with_website' => GooglePlace::whereIn('client_id', $clientIds)->whereNotNull('website')->count(),
+            'scraped' => GooglePlace::whereIn('client_id', $clientIds)->whereNotNull('contact_scraped_at')->count(),
+            'pending' => GooglePlace::whereIn('client_id', $clientIds)
                 ->whereNotNull('website')
                 ->whereNull('contact_scraped_at')
                 ->count(),
-            'with_email' => GooglePlace::where('client_id', $clientId)
+            'with_email' => GooglePlace::whereIn('client_id', $clientIds)
                 ->whereNotNull('email')
                 ->count(),
         ];
@@ -326,22 +365,23 @@ class GoogleScraperController extends Controller
         return response()->json($stats);
     }
 
-    public function exportToLead(GooglePlace $place)
+    public function exportToLead(Request $request, GooglePlace $place)
 {
     $clientId = session('client.id');
 
     if ($place->client_id != $clientId) {
-        abort(403);
+        return response()->json(['success' => false], 403);
     }
 
     if ($place->exported_to_lead) {
-        return back()->with('info', 'Déjà exporté');
+        return response()->json([
+            'success' => false,
+            'message' => 'Déjà exporté'
+        ]);
     }
 
     Lead::create([
         'client_id'     => $clientId,
-
-        // MAPPING DEMANDÉ
         'nom_global'    => $place->nom_scrapping,
         'prenom_nom'    => $place->name,
         'entreprise'    => $place->name,
@@ -358,7 +398,10 @@ class GoogleScraperController extends Controller
         'exported_at' => now(),
     ]);
 
-    return back()->with('success', 'Lead créé avec succès');
+    return response()->json([
+        'success' => true,
+        'message' => 'Export réussi'
+    ]);
 }
 
 public function exportByScrapping(Request $request)
