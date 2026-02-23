@@ -6,25 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
-{
-    Schema::table('google_places', function (Blueprint $table) {
-        $table->boolean('exported_to_lead')->default(false);
-        $table->timestamp('exported_at')->nullable();
-    });
-}
+    public function up(): void
+    {
+        if (!Schema::hasColumn('google_places', 'exported_to_lead')) {
+            Schema::table('google_places', function (Blueprint $table) {
+                $table->boolean('exported_to_lead')->default(false);
+            });
+        }
 
+        if (!Schema::hasColumn('google_places', 'exported_at')) {
+            Schema::table('google_places', function (Blueprint $table) {
+                $table->timestamp('exported_at')->nullable();
+            });
+        }
+    }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('google_places', function (Blueprint $table) {
-            //
+
+            if (Schema::hasColumn('google_places', 'exported_to_lead')) {
+                $table->dropColumn('exported_to_lead');
+            }
+
+            if (Schema::hasColumn('google_places', 'exported_at')) {
+                $table->dropColumn('exported_at');
+            }
+
         });
     }
 };

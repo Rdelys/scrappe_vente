@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delegg Hub | Connexion</title>
+    <title>Follup.io | Connexion</title>
     <style>
         /* Reset et base */
         * {
@@ -255,8 +255,8 @@
     <div class="bg-circle two"></div>
 
     <div class="login-card">
-        <div class="brand">Delegg <span>Hub</span></div>
-        <div class="subtitle">Plateforme de SCRAPE</div>
+        <div class="brand">FOLLUP.<span>IO</span></div>
+        <div class="subtitle">CRM de prospection B to B</div>
 
         <h2>Connexion</h2>
 

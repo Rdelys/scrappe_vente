@@ -818,7 +818,7 @@
 <!-- Mobile Header (visible uniquement sur mobile) -->
 <div class="mobile-header">
     <div class="mobile-brand">
-        DELEGG HUB
+        FOLLUP.IO
         <small>{{ session('client.company') }}</small>
     </div>
     <button class="menu-toggle-btn" id="mobileMenuToggle" aria-label="Menu">
@@ -832,7 +832,7 @@
 <div class="layout">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            DELEGG HUB
+            FOLLUP.IO
             <span>{{ session('client.company') }}</span>
         </div>
 
