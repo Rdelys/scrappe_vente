@@ -123,22 +123,42 @@
                 <th>
                     <input type="checkbox" class="select-all">
                 </th>
-                <th>Nom du scrapping
+                
+                <th>Entreprise
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
-                            Nom de la campagne ou de la source d’import du lead.
+                            Nom de l’entreprise ou de la société associée au prospect.
                         </span>
                     </span>
                 </th>
-                <th>Prénom Nom
+                <th>Prénom 
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
-                            Nom complet du prospect tel qu’importé ou renseigné manuellement.
+                            Prénom  du prospect tel qu’importé ou renseigné manuellement.
                         </span>
                     </span>
                 </th>
+
+                <th>Nom
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Nom du prospect tel qu’importé ou renseigné manuellement.
+                        </span>
+                    </span>
+                </th>
+
+                <th>Adresse postale
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Adresse du prospect tel qu’importé ou renseigné manuellement.
+                        </span>
+                    </span>
+                </th>
+
                 <th>Commentaire
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -155,8 +175,70 @@
                             Niveau d’intérêt du prospect : Froid, Tiède ou Chaud.
                         </span>
                     </span>
-                </th>                
-                <th>Status 
+                </th>  
+                <th>Profil LinkedIn
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Lien vers le profil LinkedIn du prospect.
+                        </span>
+                    </span>
+                </th>  
+                <th>Profil Facebook
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Lien vers le profil Facebook du prospect.
+                        </span>
+                    </span>
+                </th>   
+
+                <th>Profil Instagram
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Lien vers le profil Instagram du prospect.
+                        </span>
+                    </span>
+                </th>
+                
+                <th>Appel Téléphonique
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Numero du Lead ?.
+                        </span>
+                    </span>
+                </th>
+
+                <th>Instagram
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Status du lead sur le liaison sur Instagram
+                        </span>
+                    </span>
+                </th>
+
+                <th>Connexion LinkedIn
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Est ce que vous êtes connecté sur Linkedin avec le Lead ?.
+                        </span>
+                    </span>
+                </th>
+
+                <th>Messenger 
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Statut du contact effectué via Messenger (envoyé, réponse reçue ou indisponible).
+                        </span>
+                    </span>
+                </th>
+
+                <th>Status du Lead
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
@@ -164,11 +246,19 @@
                         </span>
                     </span>
                 </th>
-                <th>Status Relance
+                <th>Procédure de Prospection
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
                             Étape actuelle dans la séquence de relance (emails, réseaux, WhatsApp…).
+                        </span>
+                    </span>
+                </th>
+                <th>Date de relance
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Date de la dernière relance effectuée.
                         </span>
                     </span>
                 </th>
@@ -181,14 +271,6 @@
                         </span>
                     </span>
                 </th>
-                <th>Date de relance
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Date de la dernière relance effectuée.
-                        </span>
-                    </span>
-                </th>
                 <th>Devis
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -197,22 +279,8 @@
                         </span>
                     </span>
                 </th>
-                <th>LinkedIn
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Est ce que vous êtes connecté sur Linkedin avec le Lead ?.
-                        </span>
-                    </span>
-                </th>
-                <th>Téléphone
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Numero du Lead ?.
-                        </span>
-                    </span>
-                </th>
+                
+                
                 <th>MP Insta
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -245,22 +313,7 @@
                         </span>
                     </span>
                 </th>
-                <th>Messenger 
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Statut du contact effectué via Messenger (envoyé, réponse reçue ou indisponible).
-                        </span>
-                    </span>
-                </th>
-                <th>Nom entreprise
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Nom de l’entreprise ou de la société associée au prospect.
-                        </span>
-                    </span>
-                </th>
+                
                 <th>Fonction du prospect
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -293,14 +346,7 @@
                         </span>
                     </span>
                 </th>
-                <th>URL LinkedIn
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Lien vers le profil LinkedIn du prospect.
-                        </span>
-                    </span>
-                </th>
+                
                 <th>URL Maps
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -325,6 +371,14 @@
                         </span>
                     </span>
                 </th>
+                <th>Nom du scrapping
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Nom de la campagne ou de la source d’import du lead.
+                        </span>
+                    </span>
+                </th>
                 <th>Actions
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -345,12 +399,23 @@
                     <input type="checkbox" class="select-row">
                 </td>
 
-                <td>{{ $lead->nom_global ?? '-' }}</td>
+                <td>{{ $lead->entreprise ?? '-' }}</td>
 
                 <td>
                     <div class="lead-info">
                         <strong>{{ $lead->prenom_nom }}</strong>
-                        <small>ID: {{ $lead->id }}</small>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="lead-info">
+                        <strong>-</strong>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="lead-info">
+                        <strong>-</strong>
                     </div>
                 </td>
 
@@ -362,52 +427,6 @@
                     </span>
                 </td>
 
-                <td>
-                    <span class="badge">
-                        {{ $lead->status ?? '-' }}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge relance-status">
-                        {{ $lead->status_relance ?? '-' }}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="badge pourcent">
-                        {{ $lead->enfants_percent ?? '-' }}
-                    </span>
-                </td>
-
-                <td>
-                    {{ $lead->date_statut ? \Carbon\Carbon::parse($lead->date_statut)->format('d/m/Y') : '-' }}
-                </td>
-
-                <td>
-                    <span class="badge">
-                        {{ $lead->devis ?? '-' }}
-                    </span>
-                </td>
-
-                <td><span class="badge">{{ $lead->linkedin_status ?? '-' }}</span></td>
-                <td><span class="badge">{{ $lead->appel_tel ?? '-' }}</span></td>
-                <td><span class="badge">{{ $lead->mp_instagram ?? '-' }}</span></td>
-
-                <td class="checkbox-cell" onclick="event.stopPropagation()">
-                    <input type="checkbox" disabled {{ $lead->follow_insta ? 'checked' : '' }}>
-                </td>
-
-                <td><span class="badge">{{ $lead->com_instagram ?? '-' }}</span></td>
-                <td><span class="badge">{{ $lead->formulaire_site ?? '-' }}</span></td>
-                <td><span class="badge">{{ $lead->messenger ?? '-' }}</span></td>
-
-                <td>{{ $lead->entreprise ?? '-' }}</td>
-                <td>{{ $lead->fonction ?? '-' }}</td>
-                <td>{{ $lead->email ?? '-' }}</td>
-                <td>{{ $lead->tel_fixe ?? '-' }}</td>
-                <td>{{ $lead->portable ?? '-' }}</td>
-
                 <td class="url-cell">
                     @if($lead->url_linkedin)
                         <a href="{{ $lead->url_linkedin }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
@@ -416,6 +435,86 @@
                     @else -
                     @endif
                 </td>
+                <td>
+                    <div class="lead-info">
+                        <strong>-</strong>
+                    </div>
+                </td>
+                <td>
+                    <div class="lead-info">
+                        <strong>-</strong>
+                    </div>
+                </td>
+
+                <td>
+                    <span class="badge">
+                        {{ $lead->appel_tel ?? '-' }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge">
+                        {{ $lead->status ?? '-' }}
+                    </span>
+                </td>
+
+                <td>
+                    <div class="lead-info">
+                        <strong>-</strong>
+                    </div>
+                </td>
+                
+                <td>
+                    <span class="badge">
+                        {{ $lead->linkedin_status ?? '-' }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge">
+                        {{ $lead->messenger ?? '-' }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge relance-status">
+                        {{ $lead->status_relance ?? '-' }}
+                    </span>
+                </td>
+                
+                <td>
+                    {{ $lead->date_statut ? \Carbon\Carbon::parse($lead->date_statut)->format('d/m/Y') : '-' }}
+                </td>
+
+                <td>
+                    <span class="badge pourcent">
+                        {{ $lead->enfants_percent ?? '-' }}
+                    </span>
+                </td>
+
+                
+
+                <td>
+                    <span class="badge">
+                        {{ $lead->devis ?? '-' }}
+                    </span>
+                </td>
+
+                <td><span class="badge">{{ $lead->mp_instagram ?? '-' }}</span></td>
+
+                <td class="checkbox-cell" onclick="event.stopPropagation()">
+                    <input type="checkbox" disabled {{ $lead->follow_insta ? 'checked' : '' }}>
+                </td>
+
+                <td><span class="badge">{{ $lead->com_instagram ?? '-' }}</span></td>
+                <td><span class="badge">{{ $lead->formulaire_site ?? '-' }}</span></td>
+
+                <td>{{ $lead->fonction ?? '-' }}</td>
+                <td>{{ $lead->email ?? '-' }}</td>
+                <td>{{ $lead->tel_fixe ?? '-' }}</td>
+                <td>{{ $lead->portable ?? '-' }}</td>
+
+                
 
                 <td class="url-cell">
                     @if($lead->url_maps)
@@ -436,6 +535,7 @@
                 </td>
 
                 <td>{{ $lead->compte_insta ?? '-' }}</td>
+                <td>{{ $lead->nom_global ?? '-' }}</td>
 
                 <td class="actions" onclick="event.stopPropagation()">
 
@@ -1569,6 +1669,11 @@
     background: white;
     z-index: 25;
     box-sizing: border-box;
+
+    /* 🔽 Ajout pour retour à la ligne */
+    white-space: normal;        /* autorise le retour à la ligne */
+    word-wrap: break-word;      /* coupe les mots trop longs */
+    overflow-wrap: break-word;  /* version moderne */
 }
 
 /* Troisième colonne (Prénom Nom) - Forcer la largeur */
@@ -1576,12 +1681,17 @@
 .leads-table td:nth-child(3) {
     position: sticky;
     left: 230px; /* 50px + 180px */
-    width: 510px !important;
-    min-width: 510px !important;
-    max-width: 510px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
     background: white;
     z-index: 20;
     box-sizing: border-box;
+
+    /* 🔽 Ajout retour à la ligne */
+    white-space: normal !important;       /* autorise le retour */
+    overflow-wrap: break-word;            /* coupe les mots longs */
+    word-break: break-word;               /* sécurité supplémentaire */
 }
 
 /* Styles spécifiques pour les en-têtes des colonnes fixes */
