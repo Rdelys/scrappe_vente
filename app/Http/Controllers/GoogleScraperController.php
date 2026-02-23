@@ -89,7 +89,7 @@ $scrappings = GooglePlace::whereIn('client_id', $clientIds)
     
     $allResults = [];
     $start = 0; // Paramètre de pagination pour SerpAPI
-    $maxResults = 5; // ← MODIFIÉ ICI (max 2000 résultats)
+    $maxResults = 2000; // ← MODIFIÉ ICI (max 2000 résultats)
     $pageCount = 0;
 
     do {
