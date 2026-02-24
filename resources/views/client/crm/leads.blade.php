@@ -211,6 +211,15 @@
                     </span>
                 </th>
 
+                <th>Status du Lead
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            État actuel du lead dans le processus commercial.
+                        </span>
+                    </span>
+                </th>
+
                 <th>Instagram
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -238,14 +247,25 @@
                     </span>
                 </th>
 
-                <th>Status du Lead
+                <th>Message Formulaire site web 
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
-                            État actuel du lead dans le processus commercial.
+                            Lead effectué via Messenger (envoyé, réponse reçue ou deja en relation).
                         </span>
                     </span>
                 </th>
+
+                <th>Catégorie 
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Métier de l'entreprise
+                        </span>
+                    </span>
+                </th>
+
+                
                 <th>Procédure de Prospection
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -326,10 +346,21 @@
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
-                            Adresse email professionnelle du prospect.
+                            Adresse email professionnelle de l'entreprise.
                         </span>
                     </span>
                 </th>
+
+                <th>Email gérant
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Adresse email professionnelle du gérant.
+                        </span>
+                    </span>
+                </th>
+
+
                 <th>Tel Fixe
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -347,19 +378,21 @@
                     </span>
                 </th>
                 
-                <th>URL Maps
-                    <span class="info-tooltip">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip-text">
-                            Lien vers la fiche Google Maps de l’entreprise.
-                        </span>
-                    </span>
-                </th>
+                
                 <th>Site web
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
                         <span class="tooltip-text">
                             Site internet officiel de l’entreprise.
+                        </span>
+                    </span>
+                </th>
+
+                <th>Pas de site web
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Pas de site internet.
                         </span>
                     </span>
                 </th>
@@ -371,6 +404,25 @@
                         </span>
                     </span>
                 </th>
+                
+
+                <th>Note
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Note de l'entreprise.
+                        </span>
+                    </span>
+                </th>
+                <th>Avis
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Avis sur l'entreprise.
+                        </span>
+                    </span>
+                </th>
+
                 <th>Nom du scrapping
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -379,6 +431,16 @@
                         </span>
                     </span>
                 </th>
+
+                <th>URL Maps
+                    <span class="info-tooltip">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip-text">
+                            Lien vers la fiche Google Maps de l’entreprise.
+                        </span>
+                    </span>
+                </th>
+
                 <th>Actions
                     <span class="info-tooltip">
                         <i class="fas fa-info-circle"></i>
@@ -475,6 +537,17 @@
                         {{ $lead->messenger ?? '-' }}
                     </span>
                 </td>
+                <td>
+                    <span class="badge">
+                        -
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge">
+                        -
+                    </span>
+                </td>
 
                 <td>
                     <span class="badge relance-status">
@@ -510,20 +583,16 @@
                 <td><span class="badge">{{ $lead->formulaire_site ?? '-' }}</span></td>
 
                 <td>{{ $lead->fonction ?? '-' }}</td>
+
                 <td>{{ $lead->email ?? '-' }}</td>
+                <td>-</td>
+
                 <td>{{ $lead->tel_fixe ?? '-' }}</td>
                 <td>{{ $lead->portable ?? '-' }}</td>
 
                 
 
-                <td class="url-cell">
-                    @if($lead->url_maps)
-                        <a href="{{ $lead->url_maps }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
-                            Voir
-                        </a>
-                    @else -
-                    @endif
-                </td>
+                
 
                 <td class="url-cell">
                     @if($lead->url_site)
@@ -533,10 +602,35 @@
                     @else -
                     @endif
                 </td>
+                
+
+                <td class="checkbox-cell" onclick="event.stopPropagation()">
+                    <input type="checkbox" disabled>
+                </td>
 
                 <td>{{ $lead->compte_insta ?? '-' }}</td>
-                <td>{{ $lead->nom_global ?? '-' }}</td>
 
+                <td>
+                    <span class="badge">
+                        -
+                    </span>
+                </td>
+                
+                <td>
+                    <span class="badge">
+                        -
+                    </span>
+                </td>
+                <td>{{ $lead->nom_global ?? '-' }}</td>
+                
+                <td class="url-cell">
+                    @if($lead->url_maps)
+                        <a href="{{ $lead->url_maps }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
+                            Voir
+                        </a>
+                    @else -
+                    @endif
+                </td>
                 <td class="actions" onclick="event.stopPropagation()">
 
                     <button class="btn-icon"
