@@ -744,12 +744,12 @@
 
                     <div class="form-group">
                         <label>Catégorie </label>
-                        <input type="text" name="categorie ">
+                        <input type="text" name="categorie">
                     </div>
 
                     <div class="form-group">
                         <label>Adresse postale </label>
-                        <input type="text" name="adresse_postale ">
+                        <input type="text" name="adresse_postale">
                     </div>
 
                     <div class="form-group">
@@ -873,10 +873,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Date du relance</label>
-                        <input type="date" name="date_statut">
-                    </div>
 
                     <div class="form-group">
                         <label>LinkedIn</label>
