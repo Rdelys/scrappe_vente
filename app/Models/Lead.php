@@ -56,6 +56,10 @@ class Lead extends Model
         'url_site',
         'compte_insta',
 
+        // Google / réputation
+        'note',
+        'avis',
+
         // Commercial
         'devis',
     ];

@@ -453,216 +453,158 @@
         </thead>
 
         <tbody>
-        @forelse($leads as $lead)
+@forelse($leads as $lead)
 
-            <tr onclick='openEditModal(@json($lead))' style="cursor:pointer;">
+<tr onclick='openEditModal(@json($lead))' style="cursor:pointer;">
 
-                <td onclick="event.stopPropagation()">
-                    <input type="checkbox" class="select-row">
-                </td>
+<td onclick="event.stopPropagation()">
+    <input type="checkbox" class="select-row">
+</td>
 
-                <td>{{ $lead->entreprise ?? '-' }}</td>
+<td>{{ $lead->entreprise ?? '-' }}</td>
 
-                <td>
-                    <div class="lead-info">
-                        <strong>{{ $lead->prenom_nom }}</strong>
-                    </div>
-                </td>
+<td><strong>{{ $lead->prenom_nom }}</strong></td>
 
-                <td>
-                    <div class="lead-info">
-                        <strong>-</strong>
-                    </div>
-                </td>
+<td><strong>{{ $lead->nom ?? '-' }}</strong></td>
 
-                <td>
-                    <div class="lead-info">
-                        <strong>-</strong>
-                    </div>
-                </td>
+<td>{{ $lead->adresse_postale ?? '-' }}</td>
 
-                <td>{{ $lead->commentaire ?? '-' }}</td>
+<td>{{ $lead->commentaire ?? '-' }}</td>
 
-                <td>
-                    <span class="badge {{ strtolower($lead->chaleur) }}">
-                        {{ $lead->chaleur ?? '-' }}
-                    </span>
-                </td>
+<td>
+    <span class="badge {{ \Illuminate\Support\Str::slug($lead->chaleur) }}">
+        {{ $lead->chaleur ?? '-' }}
+    </span>
+</td>
 
-                <td class="url-cell">
-                    @if($lead->url_linkedin)
-                        <a href="{{ $lead->url_linkedin }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
-                            Voir
-                        </a>
-                    @else -
-                    @endif
-                </td>
-                <td>
-                    <div class="lead-info">
-                        <strong>-</strong>
-                    </div>
-                </td>
-                <td>
-                    <div class="lead-info">
-                        <strong>-</strong>
-                    </div>
-                </td>
+<td class="url-cell">
+@if($lead->url_linkedin)
+    <a href="{{ $lead->url_linkedin }}" target="_blank" onclick="event.stopPropagation()">Voir</a>
+@else - @endif
+</td>
 
-                <td>
-                    <span class="badge">
-                        {{ $lead->appel_tel ?? '-' }}
-                    </span>
-                </td>
+<td class="url-cell">
+@if($lead->url_facebook)
+    <a href="{{ $lead->url_facebook }}" target="_blank" onclick="event.stopPropagation()">Voir</a>
+@else - @endif
+</td>
 
-                <td>
-                    <span class="badge">
-                        {{ $lead->status ?? '-' }}
-                    </span>
-                </td>
+<td class="url-cell">
+@if($lead->url_instagramm)
+    <a href="{{ $lead->url_instagramm }}" target="_blank" onclick="event.stopPropagation()">Voir</a>
+@else - @endif
+</td>
 
-                <td>
-                    <div class="lead-info">
-                        <strong>-</strong>
-                    </div>
-                </td>
-                
-                <td>
-                    <span class="badge">
-                        {{ $lead->linkedin_status ?? '-' }}
-                    </span>
-                </td>
+<td><span class="badge">{{ $lead->appel_tel ?? '-' }}</span></td>
 
-                <td>
-                    <span class="badge">
-                        {{ $lead->messenger ?? '-' }}
-                    </span>
-                </td>
-                <td>
-                    <span class="badge">
-                        -
-                    </span>
-                </td>
+<td><span class="badge">{{ $lead->status ?? '-' }}</span></td>
 
-                <td>
-                    <span class="badge">
-                        -
-                    </span>
-                </td>
+<td><span class="badge">{{ $lead->mp_instagram ?? '-' }}</span></td>
 
-                <td>
-                    <span class="badge relance-status">
-                        {{ $lead->status_relance ?? '-' }}
-                    </span>
-                </td>
-                
-                <td>
-                    {{ $lead->date_statut ? \Carbon\Carbon::parse($lead->date_statut)->format('d/m/Y') : '-' }}
-                </td>
+<td><span class="badge">{{ $lead->linkedin_status ?? '-' }}</span></td>
 
-                <td>
-                    <span class="badge pourcent">
-                        {{ $lead->enfants_percent ?? '-' }}
-                    </span>
-                </td>
+<td><span class="badge">{{ $lead->messenger ?? '-' }}</span></td>
 
-                
+<td><span class="badge">{{ $lead->message_form ?? '-' }}</span></td>
 
-                <td>
-                    <span class="badge">
-                        {{ $lead->devis ?? '-' }}
-                    </span>
-                </td>
+<td><span class="badge">{{ $lead->categorie ?? '-' }}</span></td>
 
-                <td><span class="badge">{{ $lead->mp_instagram ?? '-' }}</span></td>
+<td><span class="badge relance-status">{{ $lead->status_relance ?? '-' }}</span></td>
 
-                <td class="checkbox-cell" onclick="event.stopPropagation()">
-                    <input type="checkbox" disabled {{ $lead->follow_insta ? 'checked' : '' }}>
-                </td>
+<td>
+{{ $lead->date_statut 
+    ? \Carbon\Carbon::parse($lead->date_statut)->format('d/m/Y') 
+    : '-' }}
+</td>
 
-                <td><span class="badge">{{ $lead->com_instagram ?? '-' }}</span></td>
-                <td><span class="badge">{{ $lead->formulaire_site ?? '-' }}</span></td>
+<td><span class="badge pourcent">{{ $lead->enfants_percent ?? '-' }}</span></td>
 
-                <td>{{ $lead->fonction ?? '-' }}</td>
+<td><span class="badge">{{ $lead->devis ?? '-' }}</span></td>
 
-                <td>{{ $lead->email ?? '-' }}</td>
-                <td>-</td>
+<td><span class="badge">{{ $lead->mp_instagram ?? '-' }}</span></td>
 
-                <td>{{ $lead->tel_fixe ?? '-' }}</td>
-                <td>{{ $lead->portable ?? '-' }}</td>
+<td class="checkbox-cell" onclick="event.stopPropagation()">
+    <input type="checkbox" disabled {{ $lead->follow_insta ? 'checked' : '' }}>
+</td>
 
-                
+<td><span class="badge">{{ $lead->com_instagram ?? '-' }}</span></td>
 
-                
+<td><span class="badge">{{ $lead->formulaire_site ?? '-' }}</span></td>
 
-                <td class="url-cell">
-                    @if($lead->url_site)
-                        <a href="{{ $lead->url_site }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
-                            Voir
-                        </a>
-                    @else -
-                    @endif
-                </td>
-                
+<td>{{ $lead->fonction ?? '-' }}</td>
 
-                <td class="checkbox-cell" onclick="event.stopPropagation()">
-                    <input type="checkbox" disabled>
-                </td>
+<td>{{ $lead->email ?? '-' }}</td>
 
-                <td>{{ $lead->compte_insta ?? '-' }}</td>
+<td>{{ $lead->email_gerant ?? '-' }}</td>
 
-                <td>
-                    <span class="badge">
-                        -
-                    </span>
-                </td>
-                
-                <td>
-                    <span class="badge">
-                        -
-                    </span>
-                </td>
-                <td>{{ $lead->nom_global ?? '-' }}</td>
-                
-                <td class="url-cell">
-                    @if($lead->url_maps)
-                        <a href="{{ $lead->url_maps }}" target="_blank" class="url-link" onclick="event.stopPropagation()">
-                            Voir
-                        </a>
-                    @else -
-                    @endif
-                </td>
-                <td class="actions" onclick="event.stopPropagation()">
+<td>{{ $lead->tel_fixe ?? '-' }}</td>
 
-                    <button class="btn-icon"
-                        onclick='openEditModal(@json($lead))'
-                        title="Modifier">
-                        <i class="fas fa-edit"></i>
-                    </button>
+<td>{{ $lead->portable ?? '-' }}</td>
 
-                    <button class="btn-icon"
-                        onclick="openDeleteModal({{ $lead->id }})"
-                        title="Supprimer">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <button class="btn-icon"
-                        onclick="window.location='{{ route('client.crm.leads.export.single', $lead->id) }}'"
-                        title="Exporter">
-                        <i class="fas fa-file-excel"></i>
-                    </button>
-                </td>
+<td class="url-cell">
+@if($lead->url_site)
+    <a href="{{ $lead->url_site }}" target="_blank" onclick="event.stopPropagation()">Voir</a>
+@else - @endif
+</td>
 
-            </tr>
+<td class="checkbox-cell">
+    <input type="checkbox" disabled {{ !$lead->url_site ? 'checked' : '' }}>
+</td>
 
-        @empty
+<td>{{ $lead->compte_insta ?? '-' }}</td>
 
-            <tr>
-                <td colspan="29" style="text-align:center; padding:30px;">
-                    Aucun lead trouvé.
-                </td>
-            </tr>
+<td>
+    <span class="badge">
+        {{ $lead->note ?? '-' }}
+    </span>
+</td>
 
-        @endforelse
-        </tbody>
+<td>
+    <span class="badge">
+        {{ $lead->avis ?? '-' }}
+    </span>
+</td>
+
+<td>{{ $lead->nom_global ?? '-' }}</td>
+
+<td class="url-cell">
+@if($lead->url_maps)
+    <a href="{{ $lead->url_maps }}" target="_blank" onclick="event.stopPropagation()">Voir</a>
+@else - @endif
+</td>
+
+<td class="actions" onclick="event.stopPropagation()">
+
+    <button class="btn-icon"
+        onclick='openEditModal(@json($lead))'
+        title="Modifier">
+        <i class="fas fa-edit"></i>
+    </button>
+
+    <button class="btn-icon"
+        onclick="openDeleteModal({{ $lead->id }})"
+        title="Supprimer">
+        <i class="fas fa-trash"></i>
+    </button>
+
+    <button class="btn-icon"
+        onclick="window.location='{{ route('client.crm.leads.export.single', $lead->id) }}'"
+        title="Exporter">
+        <i class="fas fa-file-excel"></i>
+    </button>
+
+</td>
+
+</tr>
+
+@empty
+<tr>
+    <td colspan="40" style="text-align:center; padding:30px;">
+        Aucun lead trouvé.
+    </td>
+</tr>
+@endforelse
+</tbody>
     </table>
 </div>
 
