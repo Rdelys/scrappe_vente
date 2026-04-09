@@ -30,3 +30,6 @@ Schedule::command('licences:expire')
 Schedule::command('licences:notify-expiring 7')
     ->daily()
     ->description('Notifier les clients avant expiration de licence');
+
+    Schedule::command('client:send-scheduled-mails')
+->everyMinute();

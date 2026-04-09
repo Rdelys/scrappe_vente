@@ -13,6 +13,16 @@ use App\Http\Controllers\Client\ClientUserController;
 use App\Http\Controllers\WebScraperController;
 use App\Http\Controllers\GoogleScraperController;
 use App\Http\Controllers\Client\LeadController;
+use App\Http\Controllers\Client\ClientMailController;
+use App\Http\Controllers\Client\ClientImapController;
+use App\Http\Controllers\Client\ClientScheduledMailController;
+use App\Http\Controllers\Client\MailMassController;
+use App\Http\Controllers\Client\PromptIaController;
+use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\SmsController;
+use App\Http\Controllers\Client\ClientInvoiceController;
+use App\Http\Controllers\Client\ClientAiNetworkController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +103,57 @@ Route::post('/web/scrape', [WebScraperController::class, 'scrape'])
         
     Route::post('/logout', [ClientAuthController::class, 'logout'])
         ->name('client.logout');
+
+    Route::get('/mails/envoyes', [ClientMailController::class,'index'])
+    ->name('client.mails.envoyes');
+
+Route::post('/mails/smtp/save', [ClientMailController::class,'saveSmtp'])
+    ->name('client.mails.smtp.save');
+
+Route::post('/mails/smtp/test', [ClientMailController::class,'testSmtp'])
+    ->name('client.mails.smtp.test');
+
+Route::post('/mails/send', [ClientMailController::class,'send'])
+    ->name('client.mails.send');
+    Route::get('/mails/recus', [ClientImapController::class,'index'])
+    ->name('client.mails.recus');
+
+Route::post('/mails/imap/save', [ClientImapController::class,'save'])
+    ->name('client.mails.imap.save');
+
+Route::post('/mails/imap/test', [ClientImapController::class,'test'])
+    ->name('client.mails.imap.test');
+
+    Route::post('/mails/imap/sync', [ClientImapController::class,'sync'])
+    ->name('client.mails.imap.sync');
+
+    Route::post('/crm/leads/{lead}/generate-mails', 
+    [\App\Http\Controllers\Client\LeadController::class, 'generateMails']
+)->name('client.crm.leads.generate-mails');
+
+Route::prefix('mails')
+    ->name('client.mails.')
+    ->group(function () {
+
+        Route::get('/programmes', [ClientScheduledMailController::class,'index'])
+            ->name('programmes');
+
+        Route::post('/programmes', [ClientScheduledMailController::class,'store'])
+            ->name('programmes.store');
+
+        Route::delete('/programmes/{id}', [ClientScheduledMailController::class,'destroy'])
+            ->name('programmes.delete');
+});
+
+Route::get('/client/mails/plus', function () {
+    return view('client.mails.plus');
+})->name('client.mails.plus');
+
+Route::get('/client/mails/plus', [MailMassController::class, 'index'])
+    ->name('client.mails.plus');
+
+Route::post('/client/mails/plus', [MailMassController::class, 'send'])
+    ->name('client.mails.plus.send');
 });
 
 /*
@@ -189,15 +250,99 @@ Route::get('/crm/leads/{lead}/export', [LeadController::class, 'exportSingleExce
     [GoogleScraperController::class, 'exportToLead'])
     ->name('client.google.export.lead.single');
 
-Route::post('/google/export-to-lead-by-scrapping', 
-    [GoogleScraperController::class, 'exportByScrapping'])
-    ->name('client.google.export.lead.scrapping');
+Route::post('/google/export-to-lead-by-scrapping-with-mails',
+    [GoogleScraperController::class, 'exportByScrappingWithMails'])
+    ->name('client.google.export.lead.scrapping.with-mails');
 
+Route::post('/google/export-to-lead-by-scrapping-without-mails',
+    [GoogleScraperController::class, 'exportByScrappingWithoutMails'])
+    ->name('client.google.export.lead.scrapping.without-mails');
 // MAILS
-Route::get('/mails/programmes', fn () => view('client.mails.programmes'))->name('client.mails.programmes');
-Route::get('/mails/envoyes', fn () => view('client.mails.envoyes'))->name('client.mails.envoyes');
-Route::get('/mails/recus', fn () => view('client.mails.recus'))->name('client.mails.recus');
+Route::get('/mails/envoyes', [ClientMailController::class,'index'])
+    ->name('client.mails.envoyes');
+    
 
 // routes/web.php
 Route::get('/dashboard', [\App\Http\Controllers\Client\DashboardController::class, 'index'])
     ->name('client.crm.dashboard');
+
+    /*
+|--------------------------------------------------------------------------
+| PROMPT IA
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/prompt-ia', [PromptIaController::class,'index'])
+    ->name('client.prompt-ia');
+
+Route::post('/prompt-ia', [PromptIaController::class,'store'])
+->name('client.prompt-ia.store');
+
+Route::put('/prompt-ia/{id}', [PromptIaController::class,'update'])
+->name('client.prompt-ia.update');
+
+Route::delete('/prompt-ia/{id}', [PromptIaController::class,'destroy'])
+->name('client.prompt-ia.delete');
+
+/*
+|--------------------------------------------------------------------------
+| COMMUNICATION
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/communication/whatsapp', function () {
+    return view('client.communication.whatsapp');
+})->name('client.communication.whatsapp');
+
+Route::get('/communication/sms', function () {
+    return view('client.communication.sms');
+})->name('client.communication.sms');
+
+Route::post('/send-whatsapp', [WhatsAppController::class, 'send'])->name('send.whatsapp');
+Route::post('/send-sms', [SmsController::class, 'send'])->name('send.sms');
+Route::post('/crm/leads/{lead}/inline-update', [LeadController::class, 'inlineUpdate'])->name('client.crm.leads.inline-update');
+
+/*
+|--------------------------------------------------------------------------
+| INVOICE
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('invoice/clients')->group(function(){
+
+    Route::get('/',[ClientInvoiceController::class,'index'])->name('clients.index');
+
+    Route::post('/store',[ClientInvoiceController::class,'store'])->name('clients.store');
+
+    Route::post('/update/{id}',[ClientInvoiceController::class,'update'])->name('clients.update');
+
+    Route::delete('/delete/{id}',[ClientInvoiceController::class,'destroy'])->name('clients.delete');
+
+    Route::get('/{id}/edit', [ClientInvoiceController::class, 'edit'])
+        ->name('clients.edit');
+
+});
+Route::get('/invoice/devis', fn() => view('client.invoice.devis'))
+    ->name('client.invoice.devis');
+
+Route::get('/invoice/factures', fn() => view('client.invoice.factures'))
+    ->name('client.invoice.factures');
+
+Route::get('/invoice/flux-auto', fn() => view('client.invoice.flux'))
+    ->name('client.invoice.flux');
+
+Route::get('/invoice/parametres', fn() => view('client.invoice.params'))
+    ->name('client.invoice.params');
+
+
+/*
+|--------------------------------------------------------------------------
+| RESEAU IA
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/client/reseau-ia',[ClientAiNetworkController::class,'index'])
+->name('client.reseau.ia');
+
+Route::post('/client/reseau-ia/generate',[ClientAiNetworkController::class,'generate'])
+->name('client.reseau.ia.generate');

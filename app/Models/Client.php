@@ -33,5 +33,13 @@ class Client extends Model
     return $this->hasMany(Lead::class);
 }
 
+public function smtp()
+{
+    return $this->hasOne(ClientSmtp::class);
+}
 
+public function mailLogs()
+{
+    return $this->hasMany(ClientMailLog::class);
+}
 }

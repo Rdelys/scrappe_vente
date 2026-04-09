@@ -13,7 +13,8 @@ class Lead extends Model
 
         // Relation
         'client_id',
-
+        'nom_global',
+        
         // Identité
         'prenom_nom',
         'nom',

@@ -9,6 +9,8 @@ use App\Models\Client;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use OpenAI\Laravel\Facades\OpenAI;
+use App\Models\PromptIa;
 
 class LeadController extends Controller
 {
@@ -517,4 +519,155 @@ public function exportSingleExcel(Lead $lead)
     }, $fileName);
 }
 
+
+public function generateMails(Lead $lead)
+{
+    $clientIds = $this->getAccessibleClientIds();
+
+    if (!in_array($lead->client_id, $clientIds)) {
+        abort(403);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RÉCUPÉRER LE PROMPT SELON LE GROUPE
+    |--------------------------------------------------------------------------
+    */
+
+    $promptModel = PromptIa::where('nom_groupe', $lead->nom_global)->first();
+
+    if (!$promptModel) {
+        return response()->json([
+            'content' => "Aucun prompt IA configuré pour ce groupe."
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROMPT UTILISATEUR
+    |--------------------------------------------------------------------------
+    */
+
+    $basePrompt = $promptModel->prompt;
+
+    /*
+    |--------------------------------------------------------------------------
+    | INJECTER LES VARIABLES ENTREPRISE
+    |--------------------------------------------------------------------------
+    */
+
+    $prompt = $basePrompt . "
+
+L'entreprise qui envoie les emails est : DELEGG.
+
+DELEGG contacte un prospect pour proposer ses services.
+
+Informations du prospect :
+
+Entreprise : {$lead->entreprise}
+Prénom : {$lead->prenom_nom}
+Nom : {$lead->nom}
+Fonction : {$lead->fonction}
+Catégorie : {$lead->categorie}
+Chaleur : {$lead->chaleur}
+Commentaire interne : {$lead->commentaire}
+
+Génère 5 emails de prospection différents envoyés par DELEGG à ce prospect.
+
+Chaque email doit :
+- être professionnel
+- être personnalisé selon l'entreprise du prospect
+- faire maximum 150 mots
+- contenir un objet
+- avoir un ton persuasif
+- proposer une prise de contact ou un rendez-vous
+
+Format attendu :
+
+Email 1
+Objet:
+Contenu:
+
+Email 2
+Objet:
+Contenu:
+
+Email 3
+Objet:
+Contenu:
+
+Email 4
+Objet:
+Contenu:
+
+Email 5
+Objet:
+Contenu:
+";
+    /*
+    |--------------------------------------------------------------------------
+    | OPENAI
+    |--------------------------------------------------------------------------
+    */
+
+    $response = OpenAI::chat()->create([
+        'model' => 'gpt-4o-mini',
+        'messages' => [
+            [
+                'role' => 'system',
+                'content' => 'Tu es un expert en copywriting B2B.'
+            ],
+            [
+                'role' => 'user',
+                'content' => $prompt
+            ],
+        ],
+        'temperature' => 0.9,
+    ]);
+
+    return response()->json([
+        'content' => $response->choices[0]->message->content
+    ]);
+}
+
+public function inlineUpdate(Request $request, Lead $lead)
+{
+    $clientIds = $this->getAccessibleClientIds();
+
+    if (!in_array($lead->client_id, $clientIds)) {
+        return response()->json(['success' => false, 'message' => 'Non autorisé'], 403);
+    }
+
+    $field = $request->input('field');
+    $value = $request->input('value');
+
+    // Valider le champ
+    $allowedFields = [
+        'entreprise', 'prenom_nom', 'nom', 'adresse_postale', 'commentaire',
+        'chaleur', 'status', 'url_linkedin', 'url_facebook', 'url_instagramm',
+        'appel_tel', 'mp_instagram', 'linkedin_status', 'messenger', 
+        'message_form', 'categorie', 'status_relance', 'date_statut',
+        'enfants_percent', 'devis', 'follow_insta', 'com_instagram',
+        'formulaire_site', 'fonction', 'email', 'email_gerant', 'tel_fixe',
+        'portable', 'url_site', 'compte_insta', 'note', 'avis', 'nom_global',
+        'url_maps'
+    ];
+
+    if (!in_array($field, $allowedFields)) {
+        return response()->json(['success' => false, 'message' => 'Champ non autorisé'], 400);
+    }
+
+    // Traitement spécial pour les checkboxes
+    if ($value === 'Oui') $value = 1;
+    if ($value === 'Non') $value = 0;
+
+    try {
+        $lead->$field = $value;
+        $lead->save();
+
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+}
 }

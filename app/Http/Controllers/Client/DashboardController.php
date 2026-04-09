@@ -152,6 +152,22 @@ class DashboardController extends Controller
             ? round(($ventes / $totalLeads) * 100, 1)
             : 0;
 
+            /*
+|--------------------------------------------------------------------------
+| NOM + PRENOM COMPLETS
+|--------------------------------------------------------------------------
+*/
+
+$completeNameCount = (clone $leads)
+    ->whereNotNull('prenom_nom')
+    ->where('prenom_nom', '!=', '')
+    ->whereNotNull('nom')
+    ->where('nom', '!=', '')
+    ->count();
+
+$completeNamePercentage = $totalLeads > 0
+    ? round(($completeNameCount / $totalLeads) * 100, 1)
+    : 0;
         /*
         |--------------------------------------------------------------------------
         | DISTRIBUTION CHALEUR
@@ -208,11 +224,23 @@ class DashboardController extends Controller
         $clientsPerformance = [];
 
         foreach ($clients as $client) {
-            // Récupérer tous les leads de ce client
             $clientLeads = Lead::where('client_id', $client->id)->get();
-            
-            // Nombre total de leads
-            $leadsCount = $clientLeads->count();
+
+$leadsCount = $clientLeads->count();
+
+/*
+|--------------------------------------------------------------------------
+| NOM + PRENOM COMPLETS PAR ASSISTANT
+|--------------------------------------------------------------------------
+*/
+
+$completeNames = $clientLeads->filter(function ($lead) {
+    return !empty($lead->prenom_nom) && !empty($lead->nom);
+})->count();
+
+$completeNamesPercentage = $leadsCount > 0
+    ? round(($completeNames / $leadsCount) * 100)
+    : 0;
             
             // Nombre de scrappings (Google Places) pour ce client
             $scrapingCount = GooglePlace::where('client_id', $client->id)->count();
@@ -246,6 +274,8 @@ class DashboardController extends Controller
                 'leads_count' => $leadsCount,
                 'scraping_count' => $scrapingCount,
                 'percentage_breakdown' => $percentageBreakdown,
+                    'complete_names' => $completeNames,
+    'complete_names_percentage' => $completeNamesPercentage,
             ];
         }
 
@@ -268,7 +298,9 @@ class DashboardController extends Controller
             'completionStats',
             'averageCompletion',
             'clientsPerformance',
-            'sessionClient'
+            'sessionClient',
+            'completeNameCount',
+'completeNamePercentage'
         ));
     }
 }
