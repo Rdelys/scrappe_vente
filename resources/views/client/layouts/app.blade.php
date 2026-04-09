@@ -1046,34 +1046,6 @@
                 </ul>
             </li>
 
-            <!-- PROMPT IA -->
-            <li>
-                <a href="{{ route('client.prompt-ia') }}">
-                    <i class="fa-solid fa-brain"></i>
-                    <span>Prompt IA</span>
-                </a>
-            </li>
-
-            <!-- COMMUNICATION -->
-            <li class="disabled-communication">
-                <a href="#" class="menu-toggle" data-target="communication-submenu">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Communication</span>
-                </a>
-                <ul class="submenu" id="communication-submenu">
-                    <li>
-                        <a href="{{ route('client.communication.whatsapp') }}">
-                            <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('client.communication.sms') }}">
-                            <i class="fa-solid fa-message"></i> <span>SMS</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
             <style>
             .disabled-communication {
                 position: relative;
